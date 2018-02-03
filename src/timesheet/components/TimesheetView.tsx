@@ -1,6 +1,15 @@
 import * as React from 'react';
 
 interface TimeSheetViewProps {
+    entries: TimesheetEntry[];
+}
+
+export class TimesheetEntry {
+    projectId: number;
+    projectName: string;
+    tagId: number;
+    tagName: string;
+    days: number[];
 }
 
 interface TimeSheetViewState {
@@ -14,7 +23,7 @@ export default class TimeSheetView extends React.Component<TimeSheetViewProps, T
     render() {
         return (
             <div>
-               test
+                test
             </div >
         );
     }

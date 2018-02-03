@@ -7,7 +7,7 @@ interface ProjectSelectorProps {
     tags: Tag[];
     onAdded: (data: AddedData) => void;
 }
-interface AddedData {
+export interface AddedData {
     projectId: number;
     tagId: number;
 }
