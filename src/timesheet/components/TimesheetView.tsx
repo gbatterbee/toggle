@@ -1,7 +1,15 @@
 import * as React from 'react';
 
+export interface TimeEntryChangedArgs {
+    projectId: number;
+    tagId: number;
+    day: number;
+    hours: number;
+}
+
 interface TimeSheetViewProps {
     entries: TimesheetEntry[];
+    onTimeEntryChanged?: (period: TimeEntryChangedArgs) => void;
 }
 
 export interface TimesheetEntry {

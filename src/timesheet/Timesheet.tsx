@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Tag, Project, tags, projects } from '../toggl/model';
 import DateSelector from './components/DateSelector';
 import ProjectSelector, { AddedData } from './components/ProjectSelector';
-import TimeSheetView, { TimesheetEntry } from './components/TimesheetView';
+import TimeSheetView, { TimesheetEntry, TimeEntryChangedArgs } from './components/TimesheetView';
 
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
@@ -31,7 +31,10 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             <>
             <DateSelector onDateChanged={(date: Date) => this.setState({ date })} />
             <ProjectSelector projects={projects} tags={tags} onAdded={this.addProjectEntry} />
-            <TimeSheetView entries={this.mapStateToTimeViewEntries()} />
+            <TimeSheetView
+                entries={this.mapStateToTimeViewEntries()}
+                onTimeEntryChanged={this.updateTimeEntry}
+            />
             </>
         );
     }
@@ -52,7 +55,22 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
 
     addProjectEntry = (data: AddedData) => {
         const { projectId, tagId } = data;
-        const newProjectEntriesState = [...this.state.projectEntries, { projectId, tagId, days: [7] }];
+        const newProjectEntriesState = [...this.state.projectEntries, { projectId, tagId, days: [] }];
         this.setState({ projectEntries: newProjectEntriesState });
+    }
+
+    updateTimeEntry = (args: TimeEntryChangedArgs) => {
+        const newEntryState =
+            this.state.projectEntries.filter(pe => pe.projectId !== args.projectId
+                && pe.tagId !== args.tagId);
+
+        const newEntry =
+            this.state.projectEntries.filter(pe => pe.projectId === args.projectId
+                && pe.tagId === args.tagId)[0];
+        newEntry.days[args.day] = args.hours;
+
+        newEntryState.push(newEntry);
+
+        this.setState({ projectEntries: newEntryState });
     }
 }

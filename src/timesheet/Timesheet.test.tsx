@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import { configure } from 'enzyme';
 import { prototype } from 'enzyme-adapter-react-16';
 
 import Timesheet from './Timesheet';
 import DateSelector from './components/DateSelector';
 import ProjectSelector from './components/ProjectSelector';
-import TimeSheetView from './components/TimesheetView';
+import TimeSheetView, { TimeEntryChangedArgs } from './components/TimesheetView';
+import { Days } from './models/enums';
 
 configure({ adapter: prototype });
-export const tags =
+const tags =
     [
         {
             id: 2,
@@ -28,7 +29,7 @@ export const tags =
         }
     ];
 
-export const projects =
+const projects =
     [
         {
             id: 1,
@@ -65,24 +66,56 @@ describe('Timesheet ', () => {
         expect(sut.state('date')).toEqual('2017-01-01');
     });
 
-    it('adds project to view', () => {
+    it('adds project to state when selected', () => {
+        const sut = shallow(<Timesheet tags={[]} projects={[]} />);
+
+        addProjectToSut(sut, 1, 2);
+
+        expect(sut.state())
+            .toEqual({ 'projectEntries': [{ 'days': [], 'projectId': 1, 'tagId': 2 }] });
+    });
+
+    it('adds project to view when selected', () => {
         const sut = shallow(<Timesheet tags={tags} projects={projects} />);
-        const projSelector: any = sut.find(ProjectSelector).prop('onAdded');
-        projSelector({ projectId: 1, tagId: 2 });
-        sut.update();
 
-        const timsheetViewProps: any = sut.find(TimeSheetView).props();
+        addProjectToSut(sut, 1, 2);
 
-        expect(timsheetViewProps.entries)
+        const entries: any = sut.find(TimeSheetView).prop('entries');
+        expect(entries)
             .toEqual([{
                 projectId: 1,
                 projectName: 'Brandbank US',
                 tagId: 2,
                 tagName: 'Admin',
-                days: [7]
+                days: []
             }]);
     });
+
+    it('updates State model with time when entered', () => {
+        const sut = shallow(<Timesheet tags={tags} projects={projects} />);
+
+        addProjectToSut(sut, 1, 2);
+
+        const onTimeEntryChanged: any
+            = sut.find(TimeSheetView).prop('onTimeEntryChanged');
+
+        onTimeEntryChanged({ projectId: 1, tagId: 2, day: Days.Wed, hours: 10 });
+        sut.update();
+
+        expect(sut.state())
+            .toEqual({
+                'projectEntries':
+                    [{ 'days': [undefined, undefined, 10], 'projectId': 1, 'tagId': 2 }]
+            });
+
+    });
 });
+
+function addProjectToSut(sut: ShallowWrapper<any, any>, projectId: number, tagId: number) {
+    const projSelector: any = sut.find(ProjectSelector).prop('onAdded');
+    projSelector({ projectId, tagId });
+    sut.update();
+}
 
 //   it('sets Apikey in state when entered', () => {
 //     const setItemSpy = sinon.spy();
