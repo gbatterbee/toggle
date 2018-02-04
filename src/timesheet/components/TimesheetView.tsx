@@ -4,7 +4,7 @@ interface TimeSheetViewProps {
     entries: TimesheetEntry[];
 }
 
-export class TimesheetEntry {
+export interface TimesheetEntry {
     projectId: number;
     projectName: string;
     tagId: number;

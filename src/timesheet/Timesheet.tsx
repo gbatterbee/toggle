@@ -13,6 +13,12 @@ interface TimesheetState {
     projectEntries: ProjectEntry[];
 }
 
+interface ProjectEntry {
+    projectId: number;
+    tagId: number;
+    days: number[];
+}
+
 export default class Timesheet extends React.Component<TimesheetProps, TimesheetState> {
 
     constructor(props: TimesheetProps) {
@@ -49,10 +55,4 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         const newProjectEntriesState = [...this.state.projectEntries, { projectId, tagId, days: [7] }];
         this.setState({ projectEntries: newProjectEntriesState });
     }
-}
-
-class ProjectEntry {
-    projectId: number;
-    tagId: number;
-    days: number[];
 }
