@@ -6,7 +6,7 @@ import { prototype } from 'enzyme-adapter-react-16';
 import Timesheet from './Timesheet';
 import DateSelector from './components/DateSelector';
 import ProjectSelector from './components/ProjectSelector';
-import TimeSheetView, { TimeEntryChangedArgs } from './components/TimesheetView';
+import TimeSheetView from './components/TimesheetView';
 import { Days } from './models/enums';
 
 configure({ adapter: prototype });
@@ -116,17 +116,3 @@ function addProjectToSut(sut: ShallowWrapper<any, any>, projectId: number, tagId
     projSelector({ projectId, tagId });
     sut.update();
 }
-
-//   it('sets Apikey in state when entered', () => {
-//     const setItemSpy = sinon.spy();
-//     (global as any).localStorage = { setItem: setItemSpy };
-
-//     const app = shallow(<App />);
-
-//     const apiEntry: any = app.find('ApiEntry').prop('onApiKeySet');
-//     apiEntry('akey');
-
-//     expect(app.state('apiKey')).toEqual('akey');
-//   });
-// https://www.toggl.com/api/v9/me/workspaces
-// const workspace -- 792899
