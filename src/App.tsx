@@ -7,18 +7,15 @@ import { Tag, Project } from './toggl/model';
 
 const logo = require('./logo.svg');
 
-class App extends React.Component<{}, { apiKey?: string, tags: Tag[], projects: Project[] }> {
+class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], projects: Project[] }> {
   constructor(props: {}) {
     super(props);
 
     const key = localStorage.getItem('apiKey');
-    if (key) {
-      this.state = { apiKey: key, tags: [], projects: [] };
-      this.getTags();
-      this.getProjects();
-    } else {
-      this.state = { tags: [], projects: [] };
-    }
+    this.state = { apiKey: key, tags: [], projects: [] };
+
+    this.getTags();
+    this.getProjects();
   }
 
   getTags = () => {
