@@ -21,7 +21,7 @@ class App extends React.Component<{}, { apiKey: string, tags: Tag[], projects: P
           <h1 className="App-title">Welcome</h1>
         </header>
         {
-          this.state.apiKey ? <Timesheet tags={[]} projects={[]} /> : <ApiEntry onApiKeySet={this.apiKeySet} />}
+          this.state.apiKey ? <Timesheet tags={tags} projects={projects} /> : <ApiEntry onApiKeySet={this.apiKeySet} />}
       </div>
     );
   }

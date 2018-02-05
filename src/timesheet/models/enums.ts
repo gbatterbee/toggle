@@ -7,3 +7,14 @@ export enum Days {
     Sat = 5,
     Sun = 6
 }
+export const DayNames = Object.keys(Days).filter(key => !isNaN(Number(Days[key])));
+
+export const Day = {
+    'Mon': Days.Mon,
+    'Tue': Days.Tue,
+    'Wed': Days.Wed,
+    'Thur': Days.Thur,
+    'Fri': Days.Fri,
+    'Sat': Days.Sat,
+    'Sun': Days.Sun
+};

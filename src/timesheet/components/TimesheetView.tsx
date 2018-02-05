@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Header, Grid, Segment } from 'semantic-ui-react';
+import { Header, Grid, Input } from 'semantic-ui-react';
+import { DayNames, Day } from '../models/enums';
 
 export interface TimeEntryChangedArgs {
     projectId: number;
@@ -10,7 +11,7 @@ export interface TimeEntryChangedArgs {
 
 interface TimeSheetViewProps {
     entries: TimesheetEntry[];
-    onTimeEntryChanged?: (period: TimeEntryChangedArgs) => void;
+    onTimeEntryChanged: (period: TimeEntryChangedArgs) => void;
 }
 
 export interface TimesheetEntry {
@@ -21,67 +22,86 @@ export interface TimesheetEntry {
     days: number[];
 }
 
-interface TimeSheetViewState {
-}
-
-export default class TimeSheetView extends React.Component<TimeSheetViewProps, TimeSheetViewState> {
+export default class TimeSheetView extends React.Component<TimeSheetViewProps> {
     constructor(props: TimeSheetViewProps) {
         super(props);
     }
 
     render() {
-        const projectList = this.props.entries.map(e => {
-            return { projectId: e.projectId, projectName: e.projectName };
-        });
+        const projectList =
+            this.props.entries.reduce((acc: any, cur) => {
+                if (!acc[cur.projectId]) {
+                    acc[cur.projectId] = true;
+                    acc.projects.push({ projectId: cur.projectId, projectName: cur.projectName });
+                }
+                return acc;
+            }, { projects: [] });
 
         return (
             <div>
-                <Project />
+                {
+                    projectList.projects.map((p: { projectId: number, projectName: string }) =>
+                        <Project
+                            key={p.projectId}
+                            project={p}
+                            tags={this.props.entries.filter(e => e.projectId === p.projectId)}
+                            onTimeEntryChanged={this.props.onTimeEntryChanged}
+                        />
+                    )}
             </div >
         );
     }
 }
+interface Project { projectId: number; projectName: string; }
+interface ProjectProps {
+    project: Project;
+    tags: TimesheetEntry[];
+    onTimeEntryChanged: (args: TimeEntryChangedArgs) => void;
+}
 
-const Project = () => (
+export const Project = ({ project, tags, onTimeEntryChanged }: ProjectProps) => (
     <>
     <Header
         as="h3"
-        content="Blah Project"
+        content={project.projectName}
         textAlign="center"
     />
-    <Tag />
+    {tags.map(t => (
+        <Tag
+            key={t.tagId}
+            tag={t}
+            onTimeEntryChanged={onTimeEntryChanged}
+        />))}
     </>
 );
 
-const Tag = () => (
-    <>
-    <Header
-        as="h5"
-        content="Blah Tag"
-        textAlign="left"
-    />
-    <Grid columns={7} stackable>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-        <Grid.Column>
-            <Segment>Content</Segment>
-        </Grid.Column>
-    </Grid>
-    </>
-);
+const Tag = ({ tag, onTimeEntryChanged }:
+    { tag: TimesheetEntry; onTimeEntryChanged: (period: TimeEntryChangedArgs) => void }) => (
+        <>
+        <Header
+            as="h5"
+            content={tag.tagName}
+            textAlign="left"
+        />
+        <Grid columns={7} stackable>
+            {DayNames.map(d => (
+                <Grid.Column key={d}>
+                    <Input
+                        type="number"
+                        placeholder={d}
+                        defaultValue={tag.days[Day[d]]}
+                        onChange={(evt) => {
+                            console.log(evt);
+                            onTimeEntryChanged({
+                                tagId: tag.tagId,
+                                projectId: tag.projectId, day: Day[d],
+                                hours: Number(evt.currentTarget.value)
+                            });
+                        }
+                        }
+                    />
+                </Grid.Column>
+            ))}
+        </Grid>
+        </>
+    );

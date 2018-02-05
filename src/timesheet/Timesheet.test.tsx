@@ -18,12 +18,12 @@ const tags =
             name: 'Admin',
         },
         {
-            id: 972665,
+            id: 3,
             workspace_id: 792899,
             name: 'Architecture/Design',
         },
         {
-            id: 970595,
+            id: 4,
             workspace_id: 792899,
             name: 'BA/PM',
         }
@@ -40,7 +40,7 @@ const projects =
             cid: 18026123
         },
         {
-            id: 11311299,
+            id: 2,
             name: 'Rejections Management',
             is_private: false,
             active: true,
@@ -48,7 +48,7 @@ const projects =
             cid: 18026123
         },
         {
-            id: 8729763,
+            id: 3,
             name: 'KTLO',
             is_private: false,
             active: true,
@@ -66,19 +66,10 @@ describe('Timesheet ', () => {
         expect(sut.state('date')).toEqual('2017-01-01');
     });
 
-    it('adds project to state when selected', () => {
-        const sut = shallow(<Timesheet tags={[]} projects={[]} />);
-
-        addProjectToSut(sut, 1, 2);
-
-        expect(sut.state())
-            .toEqual({ 'projectEntries': [{ 'days': [], 'projectId': 1, 'tagId': 2 }] });
-    });
-
-    it('adds project to view when selected', () => {
+    it('sends single project to view when there is one project in state', () => {
         const sut = shallow(<Timesheet tags={tags} projects={projects} />);
 
-        addProjectToSut(sut, 1, 2);
+        addEntryToSut(sut, 1, 2);
 
         const entries: any = sut.find(TimeSheetView).prop('entries');
         expect(entries)
@@ -91,10 +82,33 @@ describe('Timesheet ', () => {
             }]);
     });
 
-    it('updates State model with time when entered', () => {
+    it('sends multiple projects to view when there is more than one project in state', () => {
         const sut = shallow(<Timesheet tags={tags} projects={projects} />);
 
-        addProjectToSut(sut, 1, 2);
+        addEntryToSut(sut, 1, 2);
+        addEntryToSut(sut, 2, 3);
+        const entries: any = sut.find(TimeSheetView).prop('entries');
+        expect(entries)
+            .toEqual([{
+                projectId: 1,
+                projectName: 'Brandbank US',
+                tagId: 2,
+                tagName: 'Admin',
+                days: []
+            }, {
+                projectId: 2,
+                projectName: 'Rejections Management',
+                tagId: 3,
+                tagName: 'Architecture/Design',
+                days: []
+            }]);
+    });
+
+    it('updates entry with hours when onTimeEntryChanged is raised', () => {
+        const sut = shallow(<Timesheet tags={tags} projects={projects} />);
+
+        addEntryToSut(sut, 1, 2);
+        addEntryToSut(sut, 1, 2);
 
         const onTimeEntryChanged: any
             = sut.find(TimeSheetView).prop('onTimeEntryChanged');
@@ -107,11 +121,45 @@ describe('Timesheet ', () => {
                 'projectEntries':
                     [{ 'days': [undefined, undefined, 10], 'projectId': 1, 'tagId': 2 }]
             });
+    });
 
+    describe('Add button ', () => {
+        it('adds a new entry to State model when no entries have been created', () => {
+            const sut = shallow(<Timesheet tags={[]} projects={[]} />);
+
+            addEntryToSut(sut, 1, 2);
+
+            expect(sut.state())
+                .toEqual({ 'projectEntries': [{ 'days': [], 'projectId': 1, 'tagId': 2 }] });
+        });
+
+        it('appends a new entry to State model when entries have been created', () => {
+            const sut = shallow(<Timesheet tags={[]} projects={[]} />);
+
+            addEntryToSut(sut, 1, 2);
+            addEntryToSut(sut, 2, 3);
+
+            expect(sut.state())
+                .toEqual({
+                    'projectEntries': [
+                        { 'days': [], 'projectId': 1, 'tagId': 2 },
+                        { 'days': [], 'projectId': 2, 'tagId': 3 }]
+                });
+        });
+
+        it('ignores a new entry to State model when project and tag already exists', () => {
+            const sut = shallow(<Timesheet tags={[]} projects={[]} />);
+
+            addEntryToSut(sut, 1, 2);
+            addEntryToSut(sut, 1, 2);
+
+            expect(sut.state())
+                .toEqual({ 'projectEntries': [{ 'days': [], 'projectId': 1, 'tagId': 2 }] });
+        });
     });
 });
 
-function addProjectToSut(sut: ShallowWrapper<any, any>, projectId: number, tagId: number) {
+function addEntryToSut(sut: ShallowWrapper<any, any>, projectId: number, tagId: number) {
     const projSelector: any = sut.find(ProjectSelector).prop('onAdded');
     projSelector({ projectId, tagId });
     sut.update();
