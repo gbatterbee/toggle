@@ -1,0 +1,2 @@
+GET https://www.toggl.com/api/v9/me/tags
+Authorization: Basic ZjM2OTFjMjk4ZDk5ZjRmNGE1MGU1ZDg2YjI5NmVkNmI6YXBpX3Rva2Vu

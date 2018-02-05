@@ -3,14 +3,36 @@ import './App.css';
 
 import ApiEntry from './api/ApiEntry';
 import Timesheet from './timesheet/Timesheet';
-import { projects, tags, Tag, Project } from './toggl/model';
+import { Tag, Project } from './toggl/model';
 
 const logo = require('./logo.svg');
 
-class App extends React.Component<{}, { apiKey: string, tags: Tag[], projects: Project[] }> {
+class App extends React.Component<{}, { apiKey?: string, tags: Tag[], projects: Project[] }> {
   constructor(props: {}) {
     super(props);
-    this.state = { apiKey: 'apikeyset', tags, projects };
+    this.state = { tags: [], projects: [] };
+  }
+
+  getTags = () => {
+    fetch('https://www.toggl.com/api/v9/me/tags', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ZjM2OTFjMjk4ZDk5ZjRmNGE1MGU1ZDg2YjI5NmVkNmI6YXBpX3Rva2Vu',
+      }
+    }).then(response => response.json().then(j => this.setState({ tags: j })));
+  }
+
+  getProjects = () => {
+    fetch('https://www.toggl.com/api/v9/me/projects', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ZjM2OTFjMjk4ZDk5ZjRmNGE1MGU1ZDg2YjI5NmVkNmI6YXBpX3Rva2Vu',
+      }
+    }).then(response => response.json().then(j => this.setState({ projects: j })));
   }
 
   render() {
@@ -21,7 +43,11 @@ class App extends React.Component<{}, { apiKey: string, tags: Tag[], projects: P
           <h1 className="App-title">Welcome</h1>
         </header>
         {
-          this.state.apiKey ? <Timesheet tags={tags} projects={projects} /> : <ApiEntry onApiKeySet={this.apiKeySet} />}
+          this.state.apiKey ?
+            <Timesheet
+              tags={this.state.tags}
+              projects={this.state.projects}
+            /> : <ApiEntry onApiKeySet={this.apiKeySet} />}
       </div>
     );
   }
@@ -29,14 +55,8 @@ class App extends React.Component<{}, { apiKey: string, tags: Tag[], projects: P
   apiKeySet = (key: string) => {
     localStorage.setItem('apiKey', key);
 
-    // fetch('https://www.toggl.com/api/v9/me/tags', {
-    //   method: 'GET',
-    //   mode: 'no-cors',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': 'Bearer ' + 'Basic ZjM2OTFjMjk4ZDk5ZjRmNGE1MGU1ZDg2YjI5NmVkNmI6YXBpX3Rva2Vu'
-    //   }
-    // });
+    this.getTags();
+    this.getProjects();
     this.setState({ apiKey: key });
   }
 }
