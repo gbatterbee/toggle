@@ -4,6 +4,9 @@ import DateSelector from './components/DateSelector';
 import ProjectSelector, { AddedData } from './components/ProjectSelector';
 import TimeSheetView, { TimesheetEntry, TimeEntryChangedArgs } from './components/TimesheetView';
 import { Button } from 'semantic-ui-react';
+import * as moment from 'moment';
+import { Days } from './models/enums';
+
 // , tags, projects 
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
@@ -31,7 +34,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     render() {
         return (
             <>
-            <DateSelector onDateChanged={(date: Date) => this.setState({ date })} />
+            <DateSelector onDateChanged={this.setDate} />
             <ProjectSelector projects={this.props.projects} tags={this.props.tags} onAdded={this.addProjectEntry} />
             <TimeSheetView
                 entries={this.mapStateToTimeViewEntries()}
@@ -42,7 +45,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
                     <Button
                         disabled={!this.state.canSave}
                         fluid={false}
-                        onClick={() => console.log('click')}
+                        onClick={this.save}
                     >
                         Toggl It
                     </Button>
@@ -81,12 +84,13 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     }
 
     updateTimeEntry = (args: TimeEntryChangedArgs) => {
+        const state = this.state;
         const newEntryState =
-            this.state.projectEntries.filter(pe => pe.projectId !== args.projectId
-                && pe.tagId !== args.tagId);
+            state.projectEntries.filter(pe => pe.projectId !== args.projectId
+                || pe.tagId !== args.tagId);
 
         const newEntry =
-            this.state.projectEntries.filter(pe => pe.projectId === args.projectId
+            state.projectEntries.filter(pe => pe.projectId === args.projectId
                 && pe.tagId === args.tagId)[0];
 
         newEntry.days[args.day] = args.hours;
@@ -96,7 +100,39 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         this.setState({ projectEntries: newEntryState, canSave: this.canSave() });
     }
 
+    setDate = (date: Date) => {
+
+        this.setState({ date });
+    }
+
     canSave = () => {
         return (this.state.projectEntries.filter(e => e.days.filter(d => d > 0).length > 0).length !== 0);
+    }
+
+    save = () => {
+        const date = this.state.date;
+        const dates: string[] = [];
+        dates[Days.Mon] = moment(date).format('YYYY-MM-DD');
+        dates[Days.Tue] = (moment(date).add(1, 'days')).format('YYYY-MM-DD');
+        dates[Days.Wed] = (moment(date).add(2, 'days')).format('YYYY-MM-DD');
+        dates[Days.Thur] = (moment(date).add(3, 'days')).format('YYYY-MM-DD');
+        dates[Days.Fri] = (moment(date).add(4, 'days')).format('YYYY-MM-DD');
+        dates[Days.Sat] = (moment(date).add(5, 'days')).format('YYYY-MM-DD');
+        dates[Days.Sun] = (moment(date).add(6, 'days')).format('YYYY-MM-DD');
+
+        this.state.projectEntries.forEach(e => {
+            e.days.forEach((h, i) => {
+                if (h) {
+
+                    console.log(
+                        {
+                            'pid': e.projectId,
+                            'tid': e.tagId,
+                            'hrs': h,
+                            'date': dates[i]
+                        });
+                }
+            });
+        });
     }
 }

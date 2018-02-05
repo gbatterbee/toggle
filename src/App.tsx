@@ -10,7 +10,15 @@ const logo = require('./logo.svg');
 class App extends React.Component<{}, { apiKey?: string, tags: Tag[], projects: Project[] }> {
   constructor(props: {}) {
     super(props);
-    this.state = { tags: [], projects: [] };
+
+    const key = localStorage.getItem('apiKey');
+    if (key) {
+      this.state = { apiKey: key, tags: [], projects: [] };
+      this.getTags();
+      this.getProjects();
+    } else {
+      this.state = { tags: [], projects: [] };
+    }
   }
 
   getTags = () => {
@@ -19,7 +27,7 @@ class App extends React.Component<{}, { apiKey?: string, tags: Tag[], projects: 
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ZjM2OTFjMjk4ZDk5ZjRmNGE1MGU1ZDg2YjI5NmVkNmI6YXBpX3Rva2Vu',
+        'Authorization': `Basic ${this.state.apiKey}`,
       }
     }).then(response => response.json().then(j => this.setState({ tags: j })));
   }
@@ -30,7 +38,7 @@ class App extends React.Component<{}, { apiKey?: string, tags: Tag[], projects: 
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ZjM2OTFjMjk4ZDk5ZjRmNGE1MGU1ZDg2YjI5NmVkNmI6YXBpX3Rva2Vu',
+        'Authorization': `Basic ${this.state.apiKey}`,
       }
     }).then(response => response.json().then(j => this.setState({ projects: j })));
   }
@@ -53,8 +61,7 @@ class App extends React.Component<{}, { apiKey?: string, tags: Tag[], projects: 
   }
 
   apiKeySet = (key: string) => {
-    localStorage.setItem('apiKey', key);
-
+    localStorage.setItem('apiKey', btoa(`${key}:api_token`));
     this.getTags();
     this.getProjects();
     this.setState({ apiKey: key });

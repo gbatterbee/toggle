@@ -28,6 +28,7 @@ export default class DateSelector extends React.Component<DateSelectorProps, Dat
     getInitialDate() {
         let initialDate = new Date(Date.now());
         initialDate.setDate(initialDate.getDate() - (initialDate.getDay() + 6) % 7);
+        this.props.onDateChanged(initialDate);
         return initialDate;
     }
 

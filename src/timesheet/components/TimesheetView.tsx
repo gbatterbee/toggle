@@ -40,14 +40,16 @@ export default class TimeSheetView extends React.Component<TimeSheetViewProps> {
         return (
             <div>
                 {
-                    projectList.projects.map((p: { projectId: number, projectName: string }) =>
-                        <Project
-                            key={p.projectId}
-                            project={p}
-                            tags={this.props.entries.filter(e => e.projectId === p.projectId)}
-                            onTimeEntryChanged={this.props.onTimeEntryChanged}
-                        />
-                    )}
+                    projectList.projects
+                        .sort((p1: Project, p2: Project) => p1.projectName > p2.projectName ? 1 : -1)
+                        .map((p: { projectId: number, projectName: string }) =>
+                            <Project
+                                key={p.projectId}
+                                project={p}
+                                tags={this.props.entries.filter(e => e.projectId === p.projectId)}
+                                onTimeEntryChanged={this.props.onTimeEntryChanged}
+                            />
+                        )}
             </div >
         );
     }
@@ -66,7 +68,9 @@ export const Project = ({ project, tags, onTimeEntryChanged }: ProjectProps) => 
         content={project.projectName}
         textAlign="center"
     />
-    {tags.map(t => (
+    {tags
+    .sort((t1: TimesheetEntry, t2: TimesheetEntry) => t1.tagName > t2.tagName ? 1 : -1)
+    .map(t => (
         <Tag
             key={t.tagId}
             tag={t}
@@ -91,7 +95,6 @@ const Tag = ({ tag, onTimeEntryChanged }:
                         placeholder={d}
                         defaultValue={tag.days[Day[d]]}
                         onChange={(evt) => {
-                            console.log(evt);
                             onTimeEntryChanged({
                                 tagId: tag.tagId,
                                 projectId: tag.projectId, day: Day[d],
