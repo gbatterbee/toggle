@@ -21,7 +21,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   getTags = () => {
     fetch('https://www.toggl.com/api/v9/me/tags', {
       method: 'GET',
-      mode: 'no-cors',
+      mode: 'cors',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -33,6 +33,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   getProjects = () => {
     fetch('https://www.toggl.com/api/v9/me/projects', {
       method: 'GET',
+      mode: 'cors',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
