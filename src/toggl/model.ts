@@ -3,6 +3,7 @@ export interface Tag {
     workspace_id: number;
     name: string;
 }
+
 export const tags: Tag[] =
     [
         {

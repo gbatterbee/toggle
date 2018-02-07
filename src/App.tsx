@@ -13,9 +13,6 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
 
     const key = localStorage.getItem('apiKey');
     this.state = { apiKey: key, tags: [], projects: [] };
-
-    this.getTags();
-    this.getProjects();
   }
 
   getTags = () => {
