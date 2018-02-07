@@ -44,7 +44,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome</h1>
+          <h1 className="App-title">Welcome.</h1>
         </header>
         {
           this.state.apiKey ?
