@@ -18,7 +18,6 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   }
 
   getTags = () => {
-   // fetch('https://www.toggl.com/api/v9/me/tags', {
     fetch('https://gbapiman.azure-api.net/toggl/tags', {
       method: 'GET',
       mode: 'cors',
