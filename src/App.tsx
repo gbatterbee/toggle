@@ -13,10 +13,13 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
 
     const key = localStorage.getItem('apiKey');
     this.state = { apiKey: key, tags: [], projects: [] };
+    this.getTags();
+    this.getProjects();
   }
 
   getTags = () => {
-    fetch('https://www.toggl.com/api/v9/me/tags', {
+   // fetch('https://www.toggl.com/api/v9/me/tags', {
+    fetch('https://gbapiman.azure-api.net/toggl/tags', {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -28,7 +31,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   }
 
   getProjects = () => {
-    fetch('https://www.toggl.com/api/v9/me/projects', {
+    fetch('https://gbapiman.azure-api.net/toggl/projects', {
       method: 'GET',
       mode: 'cors',
       headers: {
