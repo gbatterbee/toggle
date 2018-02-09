@@ -5,13 +5,13 @@ import { Dropdown, Button } from 'semantic-ui-react';
 interface ProjectSelectorProps {
     projects: Project[];
     tags: Tag[];
-    onAdded: (data: AddedData) => void;
+    onAdded: (data: ProjectTimeEntry) => void;
 }
-export interface AddedData {
+export interface ProjectTimeEntry {
     projectId: number;
     tagId: number;
 }
-interface ProjectSelectorState extends AddedData {
+interface ProjectSelectorState extends ProjectTimeEntry {
 }
 interface Selected {
     value: number;
@@ -19,7 +19,7 @@ interface Selected {
 export default class ProjectSelector extends React.Component<ProjectSelectorProps, ProjectSelectorState> {
     constructor(props: ProjectSelectorProps) {
         super(props);
-        this.state = { projectId: 0, tagId: 0 };
+        this.state = { projectId: 0, tagId: 0};
     }
 
     render() {

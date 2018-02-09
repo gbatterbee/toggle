@@ -6,7 +6,7 @@ export interface TimeEntryChangedArgs {
     projectId: number;
     tagId: number;
     day: number;
-    hours: number;
+    hours: string;
 }
 
 interface TimeSheetViewProps {
@@ -19,7 +19,7 @@ export interface TimesheetEntry {
     projectName: string;
     tagId: number;
     tagName: string;
-    days: number[];
+    days: string[];
 }
 
 export default class TimeSheetView extends React.Component<TimeSheetViewProps> {
@@ -91,14 +91,14 @@ const Tag = ({ tag, onTimeEntryChanged }:
             {DayNames.map(d => (
                 <Grid.Column key={d}>
                     <Input
-                        type="number"
+                        type="time"
                         placeholder={d}
                         defaultValue={tag.days[Day[d]]}
                         onChange={(evt) => {
                             onTimeEntryChanged({
                                 tagId: tag.tagId,
                                 projectId: tag.projectId, day: Day[d],
-                                hours: Number(evt.currentTarget.value)
+                                hours: evt.currentTarget.value
                             });
                         }
                         }
