@@ -6,7 +6,7 @@ import { prototype } from 'enzyme-adapter-react-16';
 import Timesheet from './Timesheet';
 import DateSelector from './components/DateSelector';
 import ProjectSelector from './components/ProjectSelector';
-import TimeSheetView from './components/TimesheetView';
+import { TimeSheetView } from './components/timesheet/TimesheetView';
 import { Days } from './models/enums';
 
 configure({ adapter: prototype });

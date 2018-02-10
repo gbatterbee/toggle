@@ -3,7 +3,9 @@ import { shallow } from 'enzyme';
 import { configure } from 'enzyme';
 import { prototype } from 'enzyme-adapter-react-16';
 
-import TimesheetView, { TimesheetEntry, Project } from './TimesheetView';
+import { TimeSheetView } from './TimesheetView';
+import { TimesheetEntry } from './models';
+import { ProjectView } from './ProjectView';
 
 configure({ adapter: prototype });
 
@@ -14,8 +16,13 @@ describe('TimesheetView ', () => {
             { days: [], projectId: 1, projectName: 'p1', tagId: 2, tagName: 't2' }
         ];
         const sut = shallow(
-            <TimesheetView entries={entries} onTimeChanged={() => null} onDescriptionChanged={() => null} />);
-        const projectWrappers = sut.find(Project);
+            <TimeSheetView
+                entries={entries}
+                onTimeChanged={() => null}
+                onDescriptionChanged={() => null}
+                onRemove={() => null}
+            />);
+        const projectWrappers = sut.find(ProjectView);
 
         expect(projectWrappers.length).toEqual(1);
     });
@@ -26,8 +33,13 @@ describe('TimesheetView ', () => {
             { days: [], projectId: 2, projectName: 'p2', tagId: 2, tagName: 't2' }
         ];
         const sut = shallow(
-            <TimesheetView entries={entries} onTimeChanged={() => null} onDescriptionChanged={() => null} />);
-        const projectWrappers = sut.find(Project);
+            <TimeSheetView
+                entries={entries}
+                onTimeChanged={() => null}
+                onDescriptionChanged={() => null}
+                onRemove={() => null}
+            />);
+        const projectWrappers = sut.find(ProjectView);
 
         expect(projectWrappers.length).toEqual(2);
     });
@@ -39,13 +51,14 @@ describe('TimesheetView ', () => {
         const onTimeEntryChanged = jest.fn();
 
         const sut = shallow((
-            <TimesheetView
+            <TimeSheetView
                 entries={entries}
                 onTimeChanged={onTimeEntryChanged}
                 onDescriptionChanged={() => null}
+                onRemove={() => null}
             />));
 
-        const onTimeEntryChangedWrapper: any = sut.find(Project).prop('onTimeEntryChanged');
+        const onTimeEntryChangedWrapper: any = sut.find(ProjectView).prop('onTimeEntryChanged');
         const expectedPropogation = {
             projectId: 1,
             tagId: 1,
@@ -67,11 +80,12 @@ describe('Project ', () => {
         const onTimeEntryChanged = jest.fn();
 
         const sut = shallow((
-            <Project
+            <ProjectView
                 project={{ projectId: 1, projectName: 'p1' }}
                 tags={entries}
                 onTimeChanged={onTimeEntryChanged}
                 onDescriptionChanged={() => null}
+                onRemove={() => null}
             />));
 
         const onTimeEntryChangedWrapper: any = sut.find('Tag').prop('onTimeEntryChanged');

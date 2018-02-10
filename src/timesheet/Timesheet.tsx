@@ -2,12 +2,12 @@ import * as React from 'react';
 import { Tag, Project } from '../toggl/model';
 import DateSelector from './components/DateSelector';
 import ProjectSelector, { ProjectTimeEntry } from './components/ProjectSelector';
-import TimeSheetView, { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/TimesheetView';
+import { TimeSheetView } from './components/timesheet/TimesheetView';
 import { Button } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
+import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/timesheet/models';
 
-// , tags, projects 
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
 }
@@ -42,12 +42,14 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     render() {
         return (
             <>
+
             <DateSelector onDateChanged={this.setDate} />
             <ProjectSelector projects={this.props.projects} tags={this.props.tags} onAdded={this.addProjectEntry} />
             <TimeSheetView
                 entries={this.getTimeViewEntries()}
                 onTimeChanged={this.updateTime}
                 onDescriptionChanged={this.updateDescription}
+                onRemove={this.removeProjectEntry}
             />
             {
                 this.state.timeEntered ?
@@ -91,6 +93,12 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         this.setState({ projectEntries: newProjectEntriesState });
     }
 
+    removeProjectEntry = (projectId: number, tagId: number): void => {
+        const stateEntries = this.state.projectEntries;
+        const projectEntries = stateEntries.filter(e => e.projectId !== projectId || (tagId && tagId !== e.tagId));
+        this.setState({projectEntries});
+    }
+
     updateTime = (args: TimeChangedArgs) => {
         const state = this.state;
         const newEntryState =
@@ -118,11 +126,8 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             state.projectEntries.filter(pe => pe.projectId === args.projectId
                 && pe.tagId === args.tagId)[0];
 
-        // newEntry.day[args.day] = args.description;
         newEntry.day[args.day] = { ...newEntry.day[args.day], description: args.description };
-
         newEntryState.push(newEntry);
-
         this.setState({ projectEntries: newEntryState, timeEntered: this.canSave() });
     }
 
