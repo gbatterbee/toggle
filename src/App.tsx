@@ -5,8 +5,6 @@ import ApiEntry from './api/ApiEntry';
 import Timesheet from './timesheet/Timesheet';
 import { Tag, Project } from './toggl/model';
 
-const logo = require('./logo.svg');
-
 class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], projects: Project[] }> {
   constructor(props: {}) {
     super(props);
@@ -45,7 +43,6 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome 0.02</h1>
         </header>
         {

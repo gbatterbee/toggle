@@ -13,7 +13,8 @@ describe('TimesheetView ', () => {
             { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
             { days: [], projectId: 1, projectName: 'p1', tagId: 2, tagName: 't2' }
         ];
-        const sut = shallow(<TimesheetView entries={entries} onTimeEntryChanged={() => null} />);
+        const sut = shallow(
+            <TimesheetView entries={entries} onTimeChanged={() => null} onDescriptionChanged={() => null} />);
         const projectWrappers = sut.find(Project);
 
         expect(projectWrappers.length).toEqual(1);
@@ -24,7 +25,8 @@ describe('TimesheetView ', () => {
             { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
             { days: [], projectId: 2, projectName: 'p2', tagId: 2, tagName: 't2' }
         ];
-        const sut = shallow(<TimesheetView entries={entries} onTimeEntryChanged={() => null} />);
+        const sut = shallow(
+            <TimesheetView entries={entries} onTimeChanged={() => null} onDescriptionChanged={() => null} />);
         const projectWrappers = sut.find(Project);
 
         expect(projectWrappers.length).toEqual(2);
@@ -39,7 +41,8 @@ describe('TimesheetView ', () => {
         const sut = shallow((
             <TimesheetView
                 entries={entries}
-                onTimeEntryChanged={onTimeEntryChanged}
+                onTimeChanged={onTimeEntryChanged}
+                onDescriptionChanged={() => null}
             />));
 
         const onTimeEntryChangedWrapper: any = sut.find(Project).prop('onTimeEntryChanged');
@@ -67,7 +70,8 @@ describe('Project ', () => {
             <Project
                 project={{ projectId: 1, projectName: 'p1' }}
                 tags={entries}
-                onTimeEntryChanged={onTimeEntryChanged}
+                onTimeChanged={onTimeEntryChanged}
+                onDescriptionChanged={() => null}
             />));
 
         const onTimeEntryChangedWrapper: any = sut.find('Tag').prop('onTimeEntryChanged');

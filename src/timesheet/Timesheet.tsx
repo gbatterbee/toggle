@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Tag, Project } from '../toggl/model';
 import DateSelector from './components/DateSelector';
 import ProjectSelector, { ProjectTimeEntry } from './components/ProjectSelector';
-import TimeSheetView, { TimesheetEntry, TimeEntryChangedArgs } from './components/TimesheetView';
+import TimeSheetView, { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/TimesheetView';
 import { Button } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
@@ -18,17 +18,25 @@ interface TimesheetState {
     projectEntries: ProjectEntry[];
 }
 
+interface Entry {
+    time: string;
+    description: string;
+}
 interface ProjectEntry {
     projectId: number;
     tagId: number;
-    dailyTime: string[];
+    day: Entry[];
 }
 
 export default class Timesheet extends React.Component<TimesheetProps, TimesheetState> {
 
     constructor(props: TimesheetProps) {
         super(props);
-        this.state = { projectEntries: [], timeEntered: false };
+        const previousState = localStorage.getItem('previous');
+        this.state = {
+            projectEntries: previousState ? JSON.parse(previousState) : [],
+            timeEntered: false
+        };
     }
 
     render() {
@@ -38,7 +46,8 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             <ProjectSelector projects={this.props.projects} tags={this.props.tags} onAdded={this.addProjectEntry} />
             <TimeSheetView
                 entries={this.getTimeViewEntries()}
-                onTimeEntryChanged={this.updateTimeEntry}
+                onTimeChanged={this.updateTime}
+                onDescriptionChanged={this.updateDescription}
             />
             {
                 this.state.timeEntered ?
@@ -51,7 +60,6 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
                     </Button>
                     : null
             }
-
             </>
         );
     }
@@ -65,7 +73,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             return {
                 projectId: e.projectId,
                 tagId: e.tagId,
-                days: e.dailyTime,
+                days: e.day,
                 projectName: project ? project.name : 'unknown project',
                 tagName: tag ? tag.name : 'unknown tag'
             };
@@ -79,11 +87,11 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             return;
         }
 
-        const newProjectEntriesState = [...this.state.projectEntries, { projectId, tagId, dailyTime: [] }];
+        const newProjectEntriesState = [...this.state.projectEntries, { projectId, tagId, day: [] }];
         this.setState({ projectEntries: newProjectEntriesState });
     }
 
-    updateTimeEntry = (args: TimeEntryChangedArgs) => {
+    updateTime = (args: TimeChangedArgs) => {
         const state = this.state;
         const newEntryState =
             state.projectEntries.filter(pe => pe.projectId !== args.projectId
@@ -93,7 +101,25 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             state.projectEntries.filter(pe => pe.projectId === args.projectId
                 && pe.tagId === args.tagId)[0];
 
-        newEntry.dailyTime[args.day] = args.hours;
+        newEntry.day[args.day] = { ...newEntry.day[args.day], time: args.hours };
+
+        newEntryState.push(newEntry);
+
+        this.setState({ projectEntries: newEntryState, timeEntered: this.canSave() });
+    }
+
+    updateDescription = (args: DescriptionChangedArgs) => {
+        const state = this.state;
+        const newEntryState =
+            state.projectEntries.filter(pe => pe.projectId !== args.projectId
+                || pe.tagId !== args.tagId);
+
+        const newEntry =
+            state.projectEntries.filter(pe => pe.projectId === args.projectId
+                && pe.tagId === args.tagId)[0];
+
+        // newEntry.day[args.day] = args.description;
+        newEntry.day[args.day] = { ...newEntry.day[args.day], description: args.description };
 
         newEntryState.push(newEntry);
 
@@ -106,7 +132,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     }
 
     canSave = () => {
-        return (this.state.projectEntries.filter(e => e.dailyTime.filter(d => d).length > 0).length !== 0);
+        return (this.state.projectEntries.filter(e => e.day.filter(d => d).length > 0).length !== 0);
     }
 
     save = () => {
@@ -121,18 +147,21 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         dates[Days.Sun] = (moment(date).add(6, 'days')).format('YYYY-MM-DD');
 
         this.state.projectEntries.forEach(e => {
-            e.dailyTime.forEach((h, i) => {
-                if (h) {
-                        console.log(
-                            {
-                                'pid': e.projectId,
-                                'tid': e.tagId,
-                                'hrs': h,
-                                'date': dates[i],
-                                'wid': (this.props.projects.find(p => p.id === e.projectId) as any).wid
-                            });
+            e.day.forEach((day, i) => {
+                if (day && day.time && day.time !== '00:00') {
+                    console.log(
+                        {
+                            'pid': e.projectId,
+                            'tid': e.tagId,
+                            'hrs': day.time,
+                            'description': day.description,
+                            'date': dates[i],
+                            'wid': (this.props.projects.find(p => p.id === e.projectId) as any).wid
+                        });
                 }
             });
         });
+
+        localStorage.setItem('previous', JSON.stringify(this.state.projectEntries));
     }
 }
