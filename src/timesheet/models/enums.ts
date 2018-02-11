@@ -3,10 +3,10 @@ export enum Days {
     Tue = 1,
     Wed = 2,
     Thur = 3,
-    Fri = 4,
-    Sat = 5,
-    Sun = 6
+    Fri = 4
 }
+    // Sat = 5,
+    // Sun = 6
 export const DayNames = Object.keys(Days).filter(key => !isNaN(Number(Days[key])));
 
 export const Day = {
@@ -14,7 +14,7 @@ export const Day = {
     'Tue': Days.Tue,
     'Wed': Days.Wed,
     'Thur': Days.Thur,
-    'Fri': Days.Fri,
-    'Sat': Days.Sat,
-    'Sun': Days.Sun
+    'Fri': Days.Fri
 };
+    // 'Sat': Days.Sat,
+    // 'Sun': Days.Sun

@@ -13,18 +13,31 @@ export const TagView = ({ tag, onTimeChanged, onDescriptionChanged, onRemove }:
     }) => (
         <>
         <RemoveableHeader
-            as="h3"
+            as="h4"
             title={tag.tagName}
             onRemove={() => onRemove(tag.tagId)}
             align="left"
         />
 
-        <Grid columns={7} stackable>
+        <Grid columns={5} stackable>
             {
                 DayNames.map(d => {
                     const day: any = tag.days[Day[d]] || {};
                     return (
                         <Grid.Column key={d}>
+                            <Input
+                                type="time"
+                                defaultValue={day.time}
+                                onChange={(evt) => {
+                                    onTimeChanged({
+                                        tagId: tag.tagId,
+                                        projectId: tag.projectId,
+                                        day: Day[d],
+                                        hours: evt.currentTarget.value
+                                    });
+                                }
+                                }
+                            />
                             <Input
                                 type="text"
                                 placeholder="description"
@@ -35,19 +48,6 @@ export const TagView = ({ tag, onTimeChanged, onDescriptionChanged, onRemove }:
                                         projectId: tag.projectId,
                                         description: evt.currentTarget.value,
                                         day: Day[d],
-                                    });
-                                }
-                                }
-                            />
-                            <Input
-                                type="time"
-                                defaultValue={day.time}
-                                onChange={(evt) => {
-                                    onTimeChanged({
-                                        tagId: tag.tagId,
-                                        projectId: tag.projectId,
-                                        day: Day[d],
-                                        hours: evt.currentTarget.value
                                     });
                                 }
                                 }

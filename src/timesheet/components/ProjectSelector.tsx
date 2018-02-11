@@ -19,13 +19,13 @@ interface Selected {
 export default class ProjectSelector extends React.Component<ProjectSelectorProps, ProjectSelectorState> {
     constructor(props: ProjectSelectorProps) {
         super(props);
-        this.state = { projectId: 0, tagId: 0};
+        this.state = { projectId: -1, tagId: 0};
     }
 
     render() {
         const projects = this.props.projects || [];
         const tags = this.props.tags || [];
-        const requiresSelection = this.state.projectId === 0 || this.state.tagId === 0;
+        const requiresSelection = this.state.projectId === -1 || this.state.tagId === 0;
         return (
             <>
                 <Dropdown
@@ -48,6 +48,7 @@ export default class ProjectSelector extends React.Component<ProjectSelectorProp
                     disabled={requiresSelection}
                     fluid={true}
                     onClick={() => this.props.onAdded(this.state)}
+                    content="Add entry"
                 />
             </>
         );

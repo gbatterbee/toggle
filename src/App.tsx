@@ -77,7 +77,18 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
         'Content-Type': 'application/json',
         'Authorization': `Basic ${this.state.apiKey}`,
       }
-    }).then(response => response.json().then(j => this.setState({ projects: j })));
+    }).then(response => response.json().then(j => {
+      j.unshift({
+        id: 0,
+        name: 'No project',
+        is_private: false,
+        active: true,
+        wid: 792899,
+        cid: 18026146,
+      });
+      this.setState({ projects: j });
+    }
+    ));
   }
 
   apiKeySet = (key: string) => {

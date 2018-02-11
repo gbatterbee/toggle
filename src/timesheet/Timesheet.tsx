@@ -175,8 +175,8 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         dates[Days.Wed] = (moment(date).add(2, 'days')).format('YYYY-MM-DD');
         dates[Days.Thur] = (moment(date).add(3, 'days')).format('YYYY-MM-DD');
         dates[Days.Fri] = (moment(date).add(4, 'days')).format('YYYY-MM-DD');
-        dates[Days.Sat] = (moment(date).add(5, 'days')).format('YYYY-MM-DD');
-        dates[Days.Sun] = (moment(date).add(6, 'days')).format('YYYY-MM-DD');
+        // dates[Days.Sat] = (moment(date).add(5, 'days')).format('YYYY-MM-DD');
+        // dates[Days.Sun] = (moment(date).add(6, 'days')).format('YYYY-MM-DD');
 
         this.state.projectEntries.forEach(e => {
             e.day.forEach((day, i) => {
