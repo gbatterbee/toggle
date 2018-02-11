@@ -3,7 +3,7 @@ import './App.css';
 
 import ApiEntry from './api/ApiEntry';
 import Timesheet from './timesheet/Timesheet';
-import { Tag, Project, tags, projects } from './toggl/model';
+import { Tag, Project } from './toggl/model';
 import { Menu, Container, Dropdown, Loader, Dimmer } from 'semantic-ui-react';
 
 class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], projects: Project[] }> {
@@ -11,7 +11,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
     super(props);
 
     const key = localStorage.getItem('apiKey');
-    this.state = { apiKey: key, tags: tags, projects: projects };
+    this.state = { apiKey: key, tags: [], projects: [] };
 
     if (key) {
       this.getTags(key);
@@ -59,40 +59,38 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   }
 
   getTags = (key: string) => {
-    this.setState({ tags });
-    // fetch('https://gbapiman.azure-api.net/toggl/tags', {
-    //   method: 'GET',
-    //   mode: 'cors',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Basic ${key}`
-    //   }
-    // }).then(response => response.json().then(j => this.setState({ tags: j })));
+    fetch('https://gbapiman.azure-api.net/toggl/tags', {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${key}`
+      }
+    }).then(response => response.json().then(j => this.setState({ tags: j })));
   }
 
   getProjects = (key: string) => {
-    this.setState({ projects });
-    // fetch('https://gbapiman.azure-api.net/toggl/projects', {
-    //   method: 'GET',
-    //   mode: 'cors',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Basic ${key}`,
-    //   }
-    // }).then(response => response.json().then(j => {
-    //   j.unshift({
-    //     id: 0,
-    //     name: 'No project',
-    //     is_private: false,
-    //     active: true,
-    //     wid: 792899,
-    //     cid: 18026146,
-    //   });
-    //   this.setState({ projects: j });
-    // }
-    // ));
+    fetch('https://gbapiman.azure-api.net/toggl/projects', {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${key}`,
+      }
+    }).then(response => response.json().then(j => {
+      j.unshift({
+        id: 0,
+        name: 'No project',
+        is_private: false,
+        active: true,
+        wid: 792899,
+        cid: 18026146,
+      });
+      this.setState({ projects: j });
+    }
+    ));
   }
 
   clearApiKey = () => {
