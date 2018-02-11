@@ -81,7 +81,6 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
         'Authorization': `Basic ${key}`,
       }
     }).then(response => response.json().then(j => {
-      console.log(j);
       j.unshift({
         id: 0,
         name: 'No project',
