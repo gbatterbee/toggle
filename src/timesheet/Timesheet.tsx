@@ -107,7 +107,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     removeProjectEntry = (projectId: number, tagId: number): void => {
         const stateEntries = this.state.projectEntries;
         const projectEntries = stateEntries.filter(e => e.projectId !== projectId || (tagId && tagId !== e.tagId));
-        this.setState({ projectEntries });
+        this.setState({ projectEntries, dailySummaries: this.calculateSummary(projectEntries) });
     }
 
     updateTime = (args: TimeChangedArgs) => {

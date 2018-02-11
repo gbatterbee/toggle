@@ -5,7 +5,7 @@ export const HoursSummary = ({ dailySummaries }:
         dailySummaries: string[];
     }) => {
     return (
-        < Grid columns={7} stackable >
+        < Grid columns={5} stackable >
             {
                 dailySummaries.map((d, i) => (
                     <Grid.Column key={i}>
