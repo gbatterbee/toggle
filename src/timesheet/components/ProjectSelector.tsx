@@ -27,7 +27,7 @@ export default class ProjectSelector extends React.Component<ProjectSelectorProp
         const tags = this.props.tags || [];
         const requiresSelection = this.state.projectId === 0 || this.state.tagId === 0;
         return (
-            <div>
+            <>
                 <Dropdown
                     placeholder="Select project"
                     fluid={true}
@@ -49,7 +49,7 @@ export default class ProjectSelector extends React.Component<ProjectSelectorProp
                     fluid={true}
                     onClick={() => this.props.onAdded(this.state)}
                 />
-            </div >
+            </>
         );
     }
 }

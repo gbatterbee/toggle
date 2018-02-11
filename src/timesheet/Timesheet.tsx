@@ -7,6 +7,7 @@ import { Button } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
 import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/timesheet/models';
+import addTimes from './addTimes';
 
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
@@ -16,6 +17,7 @@ interface TimesheetState {
     date?: Date | undefined;
     timeEntered: boolean;
     projectEntries: ProjectEntry[];
+    dailySummaries: string[];
 }
 
 interface Entry {
@@ -32,21 +34,29 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
 
     constructor(props: TimesheetProps) {
         super(props);
-        const previousState = localStorage.getItem('previous');
+        const previousEntriesCache = localStorage.getItem('previous');
+        const previousEntries = previousEntriesCache ? JSON.parse(previousEntriesCache) : [];
+
         this.state = {
-            projectEntries: previousState ? JSON.parse(previousState) : [],
-            timeEntered: false
+            projectEntries: previousEntries,
+            timeEntered: previousEntries && previousEntries.length,
+            dailySummaries: this.calculateSummary(previousEntries),
         };
     }
 
     render() {
+        const totalHours = this.state.dailySummaries.reduce((a, v) => addTimes(a, v), '');
         return (
             <>
-
-            <DateSelector onDateChanged={this.setDate} />
-            <ProjectSelector projects={this.props.projects} tags={this.props.tags} onAdded={this.addProjectEntry} />
+            <h3><DateSelector onDateChanged={this.setDate} /></h3>
+            <ProjectSelector
+                projects={this.props.projects}
+                tags={this.props.tags}
+                onAdded={this.addProjectEntry}
+            />
             <TimeSheetView
                 entries={this.getTimeViewEntries()}
+                dailySummaries={this.state.dailySummaries}
                 onTimeChanged={this.updateTime}
                 onDescriptionChanged={this.updateDescription}
                 onRemove={this.removeProjectEntry}
@@ -54,11 +64,12 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
             {
                 this.state.timeEntered ?
                     <Button
+                        primary
                         disabled={!this.state.timeEntered}
                         fluid={false}
                         onClick={this.save}
                     >
-                        Toggl It
+                        Toggl It - {totalHours}hrs
                     </Button>
                     : null
             }
@@ -96,7 +107,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     removeProjectEntry = (projectId: number, tagId: number): void => {
         const stateEntries = this.state.projectEntries;
         const projectEntries = stateEntries.filter(e => e.projectId !== projectId || (tagId && tagId !== e.tagId));
-        this.setState({projectEntries});
+        this.setState({ projectEntries });
     }
 
     updateTime = (args: TimeChangedArgs) => {
@@ -112,8 +123,24 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         newEntry.day[args.day] = { ...newEntry.day[args.day], time: args.hours };
 
         newEntryState.push(newEntry);
+        this.setState(
+            {
+                projectEntries: newEntryState,
+                timeEntered: this.canSave(),
+                dailySummaries: this.calculateSummary(newEntryState)
+            });
+    }
 
-        this.setState({ projectEntries: newEntryState, timeEntered: this.canSave() });
+    calculateSummary = (entries: ProjectEntry[]) => {
+        const dailySummaries = ['', '', '', '', '', '', ''];
+        entries.forEach(e => {
+            for (var i = 0; i < 7; i++) {
+                if (e.day[i] && e.day[i].time) {
+                    dailySummaries[i] = addTimes(e.day[i].time, dailySummaries[i]);
+                }
+            }
+        });
+        return dailySummaries;
     }
 
     updateDescription = (args: DescriptionChangedArgs) => {

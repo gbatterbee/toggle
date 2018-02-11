@@ -15,9 +15,11 @@ describe('TimesheetView ', () => {
             { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
             { days: [], projectId: 1, projectName: 'p1', tagId: 2, tagName: 't2' }
         ];
+
         const sut = shallow(
             <TimeSheetView
                 entries={entries}
+                dailySummaries={[]}
                 onTimeChanged={() => null}
                 onDescriptionChanged={() => null}
                 onRemove={() => null}
@@ -35,6 +37,7 @@ describe('TimesheetView ', () => {
         const sut = shallow(
             <TimeSheetView
                 entries={entries}
+                dailySummaries={[]}
                 onTimeChanged={() => null}
                 onDescriptionChanged={() => null}
                 onRemove={() => null}
@@ -53,6 +56,7 @@ describe('TimesheetView ', () => {
         const sut = shallow((
             <TimeSheetView
                 entries={entries}
+                dailySummaries={[]}
                 onTimeChanged={onTimeEntryChanged}
                 onDescriptionChanged={() => null}
                 onRemove={() => null}

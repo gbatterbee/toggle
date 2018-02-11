@@ -2,9 +2,11 @@ import * as React from 'react';
 import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './models';
 import { Project } from './models';
 import { ProjectView } from './ProjectView';
+import { HoursSummary } from './HoursSummary';
 
 interface TimeSheetViewProps {
     entries: TimesheetEntry[];
+    dailySummaries: string[];
     onTimeChanged: (period: TimeChangedArgs) => void;
     onDescriptionChanged: (period: DescriptionChangedArgs) => void;
     onRemove: (projectId: number, tagId: number) => void;
@@ -34,7 +36,9 @@ export const TimeSheetView = (props: TimeSheetViewProps) => {
                             onDescriptionChanged={props.onDescriptionChanged}
                             onRemove={props.onRemove}
                         />
-                    )}
+                    )
+            }
+            {props.dailySummaries ? <HoursSummary dailySummaries={props.dailySummaries} /> : null}
         </div >
     );
 };

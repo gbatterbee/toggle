@@ -21,11 +21,11 @@ export default class DateSelector extends React.Component<DateSelectorProps, Dat
         var displayDate = moment(this.state.dateTime).format('DD.MM.YYYY');
         const offsetText = this.getOffsetText();
         return (
-            <div>
+            <>
                 <button onClick={e => this.previousWeek()} >&lt;&lt;</button>
                 <span>Week beginning {displayDate} ({offsetText})</span>
                 <button onClick={e => this.nextWeek()} >&gt;&gt;</button>
-            </div >
+            </ >
         );
     }
 
