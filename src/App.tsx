@@ -12,8 +12,11 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
 
     const key = localStorage.getItem('apiKey');
     this.state = { apiKey: key, tags: [], projects: [] };
-    this.getTags();
-    this.getProjects();
+
+    if (key) {
+      this.getTags(key);
+      this.getProjects(key);
+    }
   }
 
   render() {
@@ -41,7 +44,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
             <Menu.Item as="text" position="right" style={{ padding: '0em', marginRight: '3em' }}>
               <Dropdown item simple icon="user" position="right">
                 <Dropdown.Menu>
-                  <Dropdown.Item>Logout</Dropdown.Item>
+                  <Dropdown.Item onClick={this.clearApiKey}>Logout</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown></Menu.Item>
           </Container>
@@ -56,28 +59,29 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
     );
   }
 
-  getTags = () => {
+  getTags = (key: string) => {
     fetch('https://gbapiman.azure-api.net/toggl/tags', {
       method: 'GET',
       mode: 'cors',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${this.state.apiKey}`,
+        'Authorization': `Basic ${key}`
       }
     }).then(response => response.json().then(j => this.setState({ tags: j })));
   }
 
-  getProjects = () => {
+  getProjects = (key: string) => {
     fetch('https://gbapiman.azure-api.net/toggl/projects', {
       method: 'GET',
       mode: 'cors',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${this.state.apiKey}`,
+        'Authorization': `Basic ${key}`,
       }
     }).then(response => response.json().then(j => {
+      console.log(j);
       j.unshift({
         id: 0,
         name: 'No project',
@@ -91,11 +95,17 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
     ));
   }
 
+  clearApiKey = () => {
+    localStorage.removeItem('apiKey');
+    this.setState({ apiKey: '' });
+  }
+
   apiKeySet = (key: string) => {
-    localStorage.setItem('apiKey', btoa(`${key}:api_token`));
-    this.getTags();
-    this.getProjects();
-    this.setState({ apiKey: key });
+    const apiKey = btoa(`${key}:api_token`);
+    localStorage.setItem('apiKey', apiKey);
+    this.getTags(apiKey);
+    this.getProjects(apiKey);
+    this.setState({ apiKey });
   }
 }
 export default App;
