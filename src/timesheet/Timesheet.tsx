@@ -3,7 +3,7 @@ import { Tag, Project } from '../toggl/model';
 import DateSelector from './components/DateSelector';
 import ProjectSelector, { ProjectTimeEntry } from './components/ProjectSelector';
 import { TimeSheetView } from './components/timesheet/TimesheetView';
-import { Button } from 'semantic-ui-react';
+import { Button, Menu, Container } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
 import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/timesheet/models';
@@ -48,31 +48,37 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         const totalHours = this.state.dailySummaries.reduce((a, v) => addTimes(a, v), '');
         return (
             <>
-            <h3><DateSelector onDateChanged={this.setDate} /></h3>
-            <ProjectSelector
-                projects={this.props.projects}
-                tags={this.props.tags}
-                onAdded={this.addProjectEntry}
-            />
-            <TimeSheetView
-                entries={this.getTimeViewEntries()}
-                dailySummaries={this.state.dailySummaries}
-                onTimeChanged={this.updateTime}
-                onDescriptionChanged={this.updateDescription}
-                onRemove={this.removeProjectEntry}
-            />
-            {
-                this.state.timeEntered ?
-                    <Button
-                        primary
-                        disabled={!this.state.timeEntered}
-                        fluid={false}
-                        onClick={this.save}
-                    >
-                        Toggl It - {totalHours}hrs
-                    </Button>
-                    : null
-            }
+                <Menu fixed="top" style={{ padding: '0em', marginTop: '3em' }}>
+                    <Menu.Item style={{ padding: '0em', width: '100%'}}>
+                        <h3 style={{ width: '100%'}}>
+                            <DateSelector onDateChanged={this.setDate} /></h3>
+                    </Menu.Item>
+                </Menu>
+                <Container style={{ padding: '0em', marginTop: '6em' }}>
+                    <ProjectSelector
+                        projects={this.props.projects}
+                        tags={this.props.tags}
+                        onAdded={this.addProjectEntry}
+                    />
+                    <TimeSheetView
+                        entries={this.getTimeViewEntries()}
+                        dailySummaries={this.state.dailySummaries}
+                        onTimeChanged={this.updateTime}
+                        onDescriptionChanged={this.updateDescription}
+                        onRemove={this.removeProjectEntry}
+                    />
+                    {
+                        this.state.timeEntered ?
+                            <Button
+                                primary
+                                disabled={!this.state.timeEntered}
+                                fluid={false}
+                                onClick={this.save}
+                            >add {totalHours}hrs! Toggl It
+                            </Button>
+                            : null
+                    }
+                </Container>
             </>
         );
     }

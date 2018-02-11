@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as moment from 'moment';
+import { Icon } from 'semantic-ui-react';
 
 interface DateSelectorProps {
     onDateChanged: (date: Date) => void;
@@ -22,9 +23,9 @@ export default class DateSelector extends React.Component<DateSelectorProps, Dat
         const offsetText = this.getOffsetText();
         return (
             <>
-                <button onClick={e => this.previousWeek()} >&lt;&lt;</button>
+                <Icon onClick={() => this.previousWeek()} name="minus" />
                 <span>Week beginning {displayDate} ({offsetText})</span>
-                <button onClick={e => this.nextWeek()} >&gt;&gt;</button>
+                <Icon onClick={() => this.nextWeek()} name="plus" />
             </ >
         );
     }
