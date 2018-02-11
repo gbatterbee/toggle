@@ -48,7 +48,7 @@ export default class ProjectSelector extends React.Component<ProjectSelectorProp
                     disabled={requiresSelection}
                     fluid={true}
                     onClick={() => this.props.onAdded(this.state)}
-                    content="Add entry"
+                    content="Add to timesheet"
                 />
             </>
         );
