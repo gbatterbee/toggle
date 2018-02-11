@@ -6,6 +6,7 @@ import { prototype } from 'enzyme-adapter-react-16';
 import { TimeSheetView } from './TimesheetView';
 import { TimesheetEntry } from './models';
 import { ProjectView } from './ProjectView';
+import { TagView } from './TagView';
 
 configure({ adapter: prototype });
 
@@ -62,7 +63,7 @@ describe('TimesheetView ', () => {
                 onRemove={() => null}
             />));
 
-        const onTimeEntryChangedWrapper: any = sut.find(ProjectView).prop('onTimeEntryChanged');
+        const onTimeEntryChangedWrapper: any = sut.find(ProjectView).prop('onTimeChanged');
         const expectedPropogation = {
             projectId: 1,
             tagId: 1,
@@ -92,7 +93,7 @@ describe('Project ', () => {
                 onRemove={() => null}
             />));
 
-        const onTimeEntryChangedWrapper: any = sut.find('Tag').prop('onTimeEntryChanged');
+        const onTimeEntryChangedWrapper: any = sut.find(TagView).prop('onTimeChanged');
         const expectedPropogation = {
             projectId: 1,
             tagId: 1,

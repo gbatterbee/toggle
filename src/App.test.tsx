@@ -1,17 +1,17 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+// import * as React from 'react';
+// import * as ReactDOM from 'react-dom';
 // import { shallow } from 'enzyme';
 // import * as sinon from 'sinon';
 // import { configure } from 'enzyme';
 // import { prototype } from 'enzyme-adapter-react-16';
 
-import App from './App';
+// import App from './App';
 
 // configure({ adapter: prototype });
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
+ // const div = document.createElement('div');
+ // ReactDOM.render(<App />, div);
 });
 // describe('App ', () => {
 //   it('renders without crashing', () => {

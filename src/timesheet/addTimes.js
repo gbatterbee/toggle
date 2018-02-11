@@ -15,7 +15,7 @@
  * @param {String} endTime  String time format
  * @returns {String}
  */
-export default function addTimes (startTime, endTime) {
+function addTimes (startTime, endTime) {
     var times = [ 0, 0 ]
     var max = times.length
   
