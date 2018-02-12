@@ -7,7 +7,7 @@ import { Button, Menu, Container } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
 import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/timesheet/models';
-import addTimes from './addTimes';
+const addTimes = require('./addTimes');
 
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
