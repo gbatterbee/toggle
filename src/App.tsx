@@ -2,9 +2,9 @@ import * as React from 'react';
 import './App.css';
 
 import ApiEntry from './api/ApiEntry';
-import Timesheet from './timesheet/Timesheet';
+import TimesheetComponent from './timesheet/TimesheetComponent';
 import { Tag, Project } from './toggl/model';
-import { Menu, Container, Dropdown, Loader, Dimmer } from 'semantic-ui-react';
+import { Menu, Container, Dropdown } from 'semantic-ui-react';
 
 class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], projects: Project[] }> {
   constructor(props: {}) {
@@ -12,30 +12,9 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
 
     const key = localStorage.getItem('apiKey');
     this.state = { apiKey: key, tags: [], projects: [] };
-
-    if (key) {
-      this.getTags(key);
-      this.getProjects(key);
-    }
   }
 
   render() {
-    let View;
-    if (this.state.projects && this.state.projects.length && this.state.tags && this.state.tags.length) {
-      View = (
-        <Timesheet
-          tags={this.state.tags}
-          projects={this.state.projects}
-        />);
-    } else {
-      View =
-        (
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-        );
-    }
-
     return (
       <div className="App">
         <Menu fixed="top" inverted style={{ padding: '0em', marginTop: '0em', zIndex: '1000' }}>
@@ -52,45 +31,10 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
         <Container fluid style={{ marginTop: '3em' }}>
           {
             this.state.apiKey ?
-              View : <ApiEntry onApiKeySet={this.apiKeySet} />}
+              <TimesheetComponent apiKey={this.state.apiKey} /> : <ApiEntry onApiKeySet={this.apiKeySet} />}
         </Container>
       </div>
     );
-  }
-
-  getTags = (key: string) => {
-    fetch('https://gbapiman.azure-api.net/toggl/tags', {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${key}`
-      }
-    }).then(response => response.json().then(j => this.setState({ tags: j })));
-  }
-
-  getProjects = (key: string) => {
-    fetch('https://gbapiman.azure-api.net/toggl/projects', {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${key}`,
-      }
-    }).then(response => response.json().then(j => {
-      j.unshift({
-        id: 0,
-        name: 'No project',
-        is_private: false,
-        active: true,
-        wid: 792899,
-        cid: 18026146,
-      });
-      this.setState({ projects: j });
-    }
-    ));
   }
 
   clearApiKey = () => {
@@ -101,8 +45,6 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   apiKeySet = (key: string) => {
     const apiKey = btoa(`${key}:api_token`);
     localStorage.setItem('apiKey', apiKey);
-    this.getTags(apiKey);
-    this.getProjects(apiKey);
     this.setState({ apiKey });
   }
 }
