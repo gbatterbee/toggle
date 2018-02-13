@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Grid, Input } from 'semantic-ui-react';
-import { DayNames, Day } from '../../models/enums';
+import { DayNames, Day } from '../models/enums';
 import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './models';
 import RemoveableHeader from './RemoveableHeader';
 

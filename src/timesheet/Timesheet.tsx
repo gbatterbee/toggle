@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Tag, Project } from '../toggl/model';
 import DateSelector from './components/DateSelector';
 import ProjectSelector, { ProjectTimeEntry } from './components/ProjectSelector';
-import { TimeSheetView } from './components/timesheet/TimesheetView';
+import { TimeSheetView } from './timesheet-view/TimesheetView';
 import { Button, Menu, Container } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
-import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/timesheet/models';
+import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './timesheet-view/models';
 import addTimes from './addTimes';
 
 interface TimesheetProps {
@@ -18,6 +18,7 @@ interface TimesheetState {
     timeEntered: boolean;
     projectEntries: ProjectEntry[];
     dailySummaries: string[];
+    saving: boolean;
 }
 
 interface Entry {
@@ -38,6 +39,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         const previousEntries = previousEntriesCache ? JSON.parse(previousEntriesCache) : [];
 
         this.state = {
+            saving: false,
             projectEntries: previousEntries,
             timeEntered: previousEntries && previousEntries.length,
             dailySummaries: this.calculateSummary(previousEntries),
@@ -71,7 +73,8 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
                         this.state.timeEntered ?
                             <Button
                                 primary
-                                disabled={!this.state.timeEntered}
+                                loading={this.state.saving}
+                                disabled={!this.state.saving && !this.state.timeEntered}
                                 fluid={false}
                                 onClick={this.save}
                             >add {totalHours}hrs! Toggl It
@@ -173,41 +176,13 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         return (this.state.projectEntries.filter(e => e.day.filter(d => d).length > 0).length !== 0);
     }
 
-    // addTimes(startTime: string, endTime: string) {
-    //     var times = [0, 0];
-    //     var max = times.length;
-
-    //     var a: any = (startTime || '').split(':');
-    //     var b: any = (endTime || '').split(':');
-
-    //     // normalize time values
-    //     for (var i = 0; i < max; i++) {
-    //         // tslint:disable-next-line:radix
-    //         a[i] = isNaN(parseInt(a[i])) ? 0 : parseInt(a[i]);
-    //         // tslint:disable-next-line:radix
-    //         b[i] = isNaN(parseInt(b[i])) ? 0 : parseInt(b[i]);
-    //     }
-
-    //     // store time values
-    //     // tslint:disable-next-line:no-duplicate-variable
-    //     for (var i = 0; i < max; i++) {
-    //         times[i] = a[i] + b[i];
-    //     }
-
-    //     var hours = times[0];
-    //     var minutes = times[1];
-
-    //     if (minutes >= 60) {
-    //         // tslint:disable-next-line:no-bitwise
-    //         var h = (minutes / 60) << 0;
-    //         hours += h;
-    //         minutes -= 60 * h;
-    //     }
-
-    //     return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
-    // }
-
     save = () => {
+        //     curl -v -u 1971800d4d82861d8f2c1651fea4d212:api_token \
+        // -H "Content-Type: application/json" \
+        // -d '{"time_entry":{"description":"Meeting with possible clients","tags":["billed"],"duration":1200,
+        // "start":"2013-03-05T07:58:58.000Z","pid":123,"created_with":"curl"}}' \
+        // -X POST https://www.toggl.com/api/v8/time_entries
+
         const date = this.state.date;
         const dates: string[] = [];
         dates[Days.Mon] = moment(date).format('YYYY-MM-DD');
@@ -218,22 +193,57 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         // dates[Days.Sat] = (moment(date).add(5, 'days')).format('YYYY-MM-DD');
         // dates[Days.Sun] = (moment(date).add(6, 'days')).format('YYYY-MM-DD');
 
-        this.state.projectEntries.forEach(e => {
-            e.day.forEach((day, i) => {
+        const toSend: any[] = [];
+        this.state.projectEntries.forEach(pe => {
+            pe.day.forEach((day, i) => {
                 if (day && day.time && day.time !== '00:00') {
-                    console.log(
-                        {
-                            'pid': e.projectId,
+                    this.state.projectEntries.forEach(e => {
+                        const request = {
                             'tid': e.tagId,
                             'hrs': day.time,
-                            'description': day.description,
                             'date': dates[i],
-                            'wid': (this.props.projects.find(p => p.id === e.projectId) as any).wid
-                        });
+                            'wid': (this.props.projects.find(p => p.id === e.projectId) as Project).wid
+                        };
+                        if (day.description) {
+                            // tslint:disable-next-line:no-string-literal
+                            request['description'] = day.description;
+                        }
+                        if (e.projectId) {
+                            // tslint:disable-next-line:no-string-literal
+                            request['pid'] = e.projectId;
+                        }
+                        toSend.push(request);
+                    });
                 }
             });
         });
 
+        this.setState({ saving: true });
+        const promises = toSend.map(r => fetch('https://gbapiman.azure-api.net/toggl/time_entries', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${''}`,
+            },
+            body: JSON.stringify(r)
+        }));
+
+        Promise.all(promises)
+            .then(resp => {
+                if (resp.filter(r => !r.ok).length) {
+                    alert('There were problems sending the requests.\nSuggest checking Toggl - before trying again');
+                }
+                this.setState({ saving: false });
+            })
+            .catch(r => {
+                // tslint:disable-next-line:max-line-length
+                alert('There was a network error sending your requests.\nSuggest checking Toggl - before trying again');
+                this.setState({ saving: false });
+            });
+
         localStorage.setItem('previous', JSON.stringify(this.state.projectEntries));
+
     }
 }
