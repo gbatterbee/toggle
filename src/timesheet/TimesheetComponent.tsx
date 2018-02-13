@@ -233,6 +233,33 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
             });
         });
 
+        const request = {
+            'data': [
+                {
+                    'wid': 777,
+                    'pid': 20123718,
+                    'start': '2013-08-01T10:46:00',
+                    'duration': 3602,
+                    'description': 'Development',
+                    'tags': ['billed', 'poductive', 'overhours'],
+                    'at': '2013-08-01T12:04:57'
+                }, {
+                    'id': 436694101,
+                    'guid': 'ce3c2409-e624-64e2-6742-c623ff284091',
+                    'wid': 777,
+                    'billable': false,
+                    'start': '2013-08-01T11:11:00',
+                    'stop': '2013-08-01T11:46:04',
+                    'duration': 2104,
+                    'description': 'Meeting with the client',
+                    'tags': ['billed', 'poductive', 'holiday'],
+                    'duronly': false,
+                    'at': '2013-08-01T11:46:08'
+                }
+            ]
+        }
+
+        console.log(toSend);
         this.setState({ saving: true });
         const promises = toSend.map(r => fetch('https://gbapiman.azure-api.net/toggl/time_entries', {
             method: 'POST',
