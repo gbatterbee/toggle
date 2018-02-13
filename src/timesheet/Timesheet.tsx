@@ -7,6 +7,7 @@ import { Button, Menu, Container } from 'semantic-ui-react';
 import * as moment from 'moment';
 import { Days } from './models/enums';
 import { TimesheetEntry, TimeChangedArgs, DescriptionChangedArgs } from './components/timesheet/models';
+import addTimes from './addTimes';
 
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
@@ -44,12 +45,12 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
     }
 
     render() {
-        const totalHours = this.state.dailySummaries.reduce((a, v) => this.addTimes(a, v), '');
+        const totalHours = this.state.dailySummaries.reduce((a, v) => addTimes(a, v), '');
         return (
             <>
                 <Menu fixed="top" style={{ padding: '0em', marginTop: '3em' }}>
-                    <Menu.Item style={{ padding: '0em', width: '100%'}}>
-                        <h3 style={{ width: '100%'}}>
+                    <Menu.Item style={{ padding: '0em', width: '100%' }}>
+                        <h3 style={{ width: '100%' }}>
                             <DateSelector onDateChanged={this.setDate} /></h3>
                     </Menu.Item>
                 </Menu>
@@ -141,7 +142,7 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         entries.forEach(e => {
             for (var i = 0; i < 7; i++) {
                 if (e.day[i] && e.day[i].time) {
-                    dailySummaries[i] = this.addTimes(e.day[i].time, dailySummaries[i]);
+                    dailySummaries[i] = addTimes(e.day[i].time, dailySummaries[i]);
                 }
             }
         });
@@ -172,39 +173,39 @@ export default class Timesheet extends React.Component<TimesheetProps, Timesheet
         return (this.state.projectEntries.filter(e => e.day.filter(d => d).length > 0).length !== 0);
     }
 
-    addTimes (startTime: string, endTime: string) {
-        var times = [ 0, 0 ];
-        var max = times.length;
-    
-        var a: any = (startTime || '').split(':');
-        var b: any = (endTime || '').split(':');
-    
-        // normalize time values
-        for (var i = 0; i < max; i++) {
-        // tslint:disable-next-line:radix
-        a[i] = isNaN(parseInt(a[i])) ? 0 : parseInt(a[i]);
-        // tslint:disable-next-line:radix
-        b[i] = isNaN(parseInt(b[i])) ? 0 : parseInt(b[i]);
-        }
-    
-        // store time values
-        // tslint:disable-next-line:no-duplicate-variable
-        for (var i = 0; i < max; i++) {
-        times[i] = a[i] + b[i];
-        }
-    
-        var hours = times[0];
-        var minutes = times[1];
-    
-        if (minutes >= 60) {
-        // tslint:disable-next-line:no-bitwise
-        var h = (minutes / 60) << 0;
-        hours += h;
-        minutes -= 60 * h;
-        }
-    
-        return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
-    }
+    // addTimes(startTime: string, endTime: string) {
+    //     var times = [0, 0];
+    //     var max = times.length;
+
+    //     var a: any = (startTime || '').split(':');
+    //     var b: any = (endTime || '').split(':');
+
+    //     // normalize time values
+    //     for (var i = 0; i < max; i++) {
+    //         // tslint:disable-next-line:radix
+    //         a[i] = isNaN(parseInt(a[i])) ? 0 : parseInt(a[i]);
+    //         // tslint:disable-next-line:radix
+    //         b[i] = isNaN(parseInt(b[i])) ? 0 : parseInt(b[i]);
+    //     }
+
+    //     // store time values
+    //     // tslint:disable-next-line:no-duplicate-variable
+    //     for (var i = 0; i < max; i++) {
+    //         times[i] = a[i] + b[i];
+    //     }
+
+    //     var hours = times[0];
+    //     var minutes = times[1];
+
+    //     if (minutes >= 60) {
+    //         // tslint:disable-next-line:no-bitwise
+    //         var h = (minutes / 60) << 0;
+    //         hours += h;
+    //         minutes -= 60 * h;
+    //     }
+
+    //     return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+    // }
 
     save = () => {
         const date = this.state.date;
