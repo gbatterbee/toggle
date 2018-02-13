@@ -17,7 +17,6 @@ interface TimesheetComponentProps {
 interface TimesheetComponentState {
     tags: Tag[]; projects: Project[];
     date?: Date | undefined;
-    timeEntered: boolean;
     projectEntries: ProjectEntry[];
     dailySummaries: string[];
     saving: boolean;
@@ -46,7 +45,6 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
             date: undefined,
             saving: false,
             projectEntries: previousEntries,
-            timeEntered: previousEntries && previousEntries.length,
             dailySummaries: this.calculateSummary(previousEntries),
         };
 
@@ -67,7 +65,6 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
                 date: undefined,
                 saving: false,
                 projectEntries: [],
-                timeEntered: false,
                 dailySummaries: [],
             });
         }
@@ -76,7 +73,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
     render() {
         const togglDataLoaded = this.state.projects && this.state.projects.length
             && this.state.tags && this.state.tags.length;
-            
+
         if (!togglDataLoaded) {
             return (
                 < Dimmer active >
@@ -128,7 +125,6 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
         this.setState(
             {
                 projectEntries: newEntryState,
-                timeEntered: this.canSave(),
                 dailySummaries: this.calculateSummary(newEntryState)
             });
     }
@@ -151,7 +147,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
 
         newEntry.day[args.day] = { ...newEntry.day[args.day], description: args.description };
         newEntryState.push(newEntry);
-        this.setState({ projectEntries: newEntryState, timeEntered: this.canSave() });
+        this.setState({ projectEntries: newEntryState });
     }
 
     calculateSummary = (entries: ProjectEntry[]) => {
@@ -199,10 +195,6 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
             this.setState({ projects: j });
         }
         ));
-    }
-
-    canSave = () => {
-        return (this.state.projectEntries.filter(e => e.day.filter(d => d).length > 0).length !== 0);
     }
 
     save = () => {

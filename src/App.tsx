@@ -38,7 +38,7 @@ class App extends React.Component<{}, { apiKey?: string | null, tags: Tag[], pro
   }
 
   clearApiKey = () => {
-    localStorage.removeItem('apiKey');
+    localStorage.clear();
     this.setState({ apiKey: '' });
   }
 

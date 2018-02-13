@@ -10,7 +10,6 @@ import addTimes from './addTimes';
 interface TimesheetProps {
     tags: Tag[]; projects: Project[];
     date?: Date | undefined;
-    timeEntered: boolean;
     projectEntries: ProjectEntry[];
     dailySummaries: string[];
     saving: boolean;
@@ -63,11 +62,11 @@ export default class Timesheet extends React.Component<TimesheetProps> {
                         onRemove={this.props.onProjectRemoved}
                     />
                     {
-                        this.props.timeEntered ?
+                        this.canSave() ?
                             <Button
                                 primary
                                 loading={this.props.saving}
-                                disabled={!this.props.saving && !this.props.timeEntered}
+                                disabled={this.props.saving}
                                 fluid={false}
                                 onClick={this.props.onSave}
                             >add {totalHours}hrs! Toggl It
@@ -93,5 +92,9 @@ export default class Timesheet extends React.Component<TimesheetProps> {
                 tagName: tag ? tag.name : 'unknown tag'
             };
         });
+    }
+
+    canSave = () => {
+        return (this.props.projectEntries.filter(e => e.day.filter(d => d).length > 0).length !== 0);
     }
 }
