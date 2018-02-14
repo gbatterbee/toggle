@@ -1,7 +1,7 @@
 export interface TimesheetEntry {
     projectId: number;
     projectName: string;
-    tagId: number;
+    tagId: string;
     tagName: string;
     days: Entry[];
 }
@@ -13,14 +13,14 @@ export interface Entry {
 
 export interface TimeChangedArgs {
     projectId: number;
-    tagId: number;
+    tagId: string;
     day: number;
     hours: string;
 }
 
 export interface DescriptionChangedArgs {
     projectId: number;
-    tagId: number;
+    tagId: string;
     day: number;
     description: string;
 }

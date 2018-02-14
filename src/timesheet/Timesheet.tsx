@@ -16,7 +16,7 @@ interface TimesheetProps {
     onDateSelected: (date: Date) => void;
     onProjectAdded: (data: ProjectTimeEntry) => void;
     onTimeEntryChanged: (args: TimeChangedArgs) => void;
-    onProjectRemoved: (projectId: number, tagId: number) => void;
+    onProjectRemoved: (projectId: number, tagId: string) => void;
     onDescriptionChanged: (args: DescriptionChangedArgs) => void;
     onSave: () => void;
 
@@ -28,7 +28,7 @@ interface Entry {
 }
 interface ProjectEntry {
     projectId: number;
-    tagId: number;
+    tagId: string;
     day: Entry[];
 }
 
@@ -42,38 +42,38 @@ export default class Timesheet extends React.Component<TimesheetProps> {
         const totalHours = this.props.dailySummaries.reduce((a, v) => addTimes(a, v), '');
         return (
             <>
-                <Menu fixed="top" style={{ padding: '0em', marginTop: '3em' }}>
-                    <Menu.Item style={{ padding: '0em', width: '100%' }}>
-                        <h3 style={{ width: '100%' }}>
-                            <DateSelector onDateChanged={this.props.onDateSelected} /></h3>
-                    </Menu.Item>
-                </Menu>
-                <Container style={{ padding: '0em', marginTop: '6em' }}>
-                    <ProjectSelector
-                        projects={this.props.projects}
-                        tags={this.props.tags}
-                        onAdded={this.props.onProjectAdded}
-                    />
-                    <TimeSheetView
-                        entries={this.getTimeViewEntries()}
-                        dailySummaries={this.props.dailySummaries}
-                        onTimeChanged={this.props.onTimeEntryChanged}
-                        onDescriptionChanged={this.props.onDescriptionChanged}
-                        onRemove={this.props.onProjectRemoved}
-                    />
-                    {
-                        this.canSave() ?
-                            <Button
-                                primary
-                                loading={this.props.saving}
-                                disabled={this.props.saving}
-                                fluid={false}
-                                onClick={this.props.onSave}
-                            >add {totalHours}hrs! Toggl It
-                            </Button>
-                            : null
-                    }
-                </Container>
+            <Menu fixed="top" style={{ padding: '0em', marginTop: '3em' }}>
+                <Menu.Item style={{ padding: '0em', width: '100%' }}>
+                    <h3 style={{ width: '100%' }}>
+                        <DateSelector onDateChanged={this.props.onDateSelected} /></h3>
+                </Menu.Item>
+            </Menu>
+            <Container style={{ padding: '0em', marginTop: '6em' }}>
+                <ProjectSelector
+                    projects={this.props.projects}
+                    tags={this.props.tags}
+                    onAdded={this.props.onProjectAdded}
+                />
+                <TimeSheetView
+                    entries={this.getTimeViewEntries()}
+                    dailySummaries={this.props.dailySummaries}
+                    onTimeChanged={this.props.onTimeEntryChanged}
+                    onDescriptionChanged={this.props.onDescriptionChanged}
+                    onRemove={this.props.onProjectRemoved}
+                />
+                {
+                    this.canSave() ?
+                        <Button
+                            primary
+                            loading={this.props.saving}
+                            disabled={this.props.saving}
+                            fluid={false}
+                            onClick={this.props.onSave}
+                        >add {totalHours}hrs! Toggl It
+                        </Button>
+                        : null
+                }
+            </Container>
             </>
         );
     }
@@ -81,7 +81,7 @@ export default class Timesheet extends React.Component<TimesheetProps> {
     getTimeViewEntries = (): TimesheetEntry[] => {
         const props = this.props;
         return props.projectEntries.map((e: ProjectEntry) => {
-            const tag = props.tags.find(t => t.id === e.tagId);
+            //  const tag = props.tags.find(t => t.name === e.name);
             const project = props.projects.find(p => p.id === e.projectId);
 
             return {
@@ -89,7 +89,7 @@ export default class Timesheet extends React.Component<TimesheetProps> {
                 tagId: e.tagId,
                 days: e.day,
                 projectName: project ? project.name : 'unknown project',
-                tagName: tag ? tag.name : 'unknown tag'
+                tagName: e.tagId
             };
         });
     }

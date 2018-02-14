@@ -13,8 +13,8 @@ configure({ adapter: prototype });
 describe('TimesheetView ', () => {
     it('displays one projects when entries are for a single project', () => {
         const entries: TimesheetEntry[] = [
-            { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
-            { days: [], projectId: 1, projectName: 'p1', tagId: 2, tagName: 't2' }
+            { days: [], projectId: 1, projectName: 'p1', tagId: '1', tagName: 't1' },
+            { days: [], projectId: 1, projectName: 'p1', tagId: '2', tagName: 't2' }
         ];
 
         const sut = shallow(
@@ -32,8 +32,8 @@ describe('TimesheetView ', () => {
 
     it('displays two distinct projects when entries are for different project', () => {
         const entries: TimesheetEntry[] = [
-            { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
-            { days: [], projectId: 2, projectName: 'p2', tagId: 2, tagName: 't2' }
+            { days: [], projectId: 1, projectName: 'p1', tagId: '1', tagName: 't1' },
+            { days: [], projectId: 2, projectName: 'p2', tagId: '2', tagName: 't2' }
         ];
         const sut = shallow(
             <TimeSheetView
@@ -50,7 +50,7 @@ describe('TimesheetView ', () => {
 
     it('propgates TimeEntryChanged event', () => {
         const entries: TimesheetEntry[] = [
-            { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
+            { days: [], projectId: 1, projectName: 'p1', tagId: '1', tagName: 't1' },
         ];
         const onTimeEntryChanged = jest.fn();
 
@@ -80,7 +80,7 @@ describe('TimesheetView ', () => {
 describe('Project ', () => {
     it('adds project id to time changed propogation event', () => {
         const entries: TimesheetEntry[] = [
-            { days: [], projectId: 1, projectName: 'p1', tagId: 1, tagName: 't1' },
+            { days: [], projectId: 1, projectName: 'p1', tagId: '1', tagName: 't1' },
         ];
         const onTimeEntryChanged = jest.fn();
 

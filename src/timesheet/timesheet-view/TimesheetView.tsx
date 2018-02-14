@@ -9,7 +9,7 @@ interface TimeSheetViewProps {
     dailySummaries: string[];
     onTimeChanged: (period: TimeChangedArgs) => void;
     onDescriptionChanged: (period: DescriptionChangedArgs) => void;
-    onRemove: (projectId: number, tagId: number) => void;
+    onRemove: (projectId: number, tagId: string) => void;
 }
 
 export const TimeSheetView = (props: TimeSheetViewProps) => {

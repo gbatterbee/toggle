@@ -28,7 +28,7 @@ interface Entry {
 }
 interface ProjectEntry {
     projectId: number;
-    tagId: number;
+    tagId: string;
     day: Entry[];
 }
 
@@ -129,7 +129,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
             });
     }
 
-    removeProjectEntry = (projectId: number, tagId: number): void => {
+    removeProjectEntry = (projectId: number, tagId: string): void => {
         const stateEntries = this.state.projectEntries;
         const projectEntries = stateEntries.filter(e => e.projectId !== projectId || (tagId && tagId !== e.tagId));
         this.setState({ projectEntries, dailySummaries: this.calculateSummary(projectEntries) });
@@ -212,52 +212,59 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
         this.state.projectEntries.forEach(pe => {
             pe.day.forEach((day, i) => {
                 if (day && day.time && day.time !== '00:00') {
-                    this.state.projectEntries.forEach(e => {
                         const request = {
-                            'tid': e.tagId,
-                            'hrs': day.time,
-                            'date': dates[i],
-                            'wid': (this.state.projects.find(p => p.id === e.projectId) as Project).wid
+                            'tags': [pe.tagId],
+                            'duration': day.time.split(':')
+                                .reduce((acc, time) => (60 * (Number(acc) + Number(time))), 0),
+                            'start': dates[i] + 'T09:00:00+00:00',
+                            'created_with': 'TogglGB',
+                            'wid': (this.state.projects.find(p => p.id === pe.projectId) as Project).wid
                         };
                         if (day.description) {
                             // tslint:disable-next-line:no-string-literal
                             request['description'] = day.description;
                         }
-                        if (e.projectId) {
+                        if (pe.projectId) {
                             // tslint:disable-next-line:no-string-literal
-                            request['pid'] = e.projectId;
+                            request['pid'] = pe.projectId;
                         }
                         toSend.push(request);
-                    });
                 }
             });
         });
 
-        const request = {
-            'data': [
-                {
-                    'wid': 777,
-                    'pid': 20123718,
-                    'start': '2013-08-01T10:46:00',
-                    'duration': 3602,
-                    'description': 'Development',
-                    'tags': ['billed', 'poductive', 'overhours'],
-                    'at': '2013-08-01T12:04:57'
-                }, {
-                    'id': 436694101,
-                    'guid': 'ce3c2409-e624-64e2-6742-c623ff284091',
-                    'wid': 777,
-                    'billable': false,
-                    'start': '2013-08-01T11:11:00',
-                    'stop': '2013-08-01T11:46:04',
-                    'duration': 2104,
-                    'description': 'Meeting with the client',
-                    'tags': ['billed', 'poductive', 'holiday'],
-                    'duronly': false,
-                    'at': '2013-08-01T11:46:08'
-                }
-            ]
-        }
+        // const request = {
+        //     'data': [
+        //         {"time_entry":{
+        //             "start":"2012-02-16T15:35:47+02:00",
+        //             "duration":0,
+        //             "description":"",
+        //             "created_with":"Postman"
+        //         }}
+
+        //         {
+        //             'wid': 777,
+        //             'pid': 20123718,
+        //             'start': '2013-08-01T10:46:00',
+        //             'duration': 3602,
+        //             'description': 'Development',
+        //             'tags': ['billed', 'poductive', 'overhours'],
+        //             'at': '2013-08-01T12:04:57'
+        //         }, {
+        //             'id': 436694101,
+        //             'guid': 'ce3c2409-e624-64e2-6742-c623ff284091',
+        //             'wid': 777,
+        //             'billable': false,
+        //             'start': '2013-08-01T11:11:00',
+        //             'stop': '2013-08-01T11:46:04',
+        //             'duration': 2104,
+        //             'description': 'Meeting with the client',
+        //             'tags': ['billed', 'poductive', 'holiday'],
+        //             'duronly': false,
+        //             'at': '2013-08-01T11:46:08'
+        //         }
+        //     ]
+        // }
 
         console.log(toSend);
         this.setState({ saving: true });

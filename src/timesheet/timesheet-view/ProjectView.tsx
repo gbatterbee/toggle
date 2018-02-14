@@ -8,7 +8,7 @@ interface ProjectProps {
     tags: TimesheetEntry[];
     onTimeChanged: (args: TimeChangedArgs) => void;
     onDescriptionChanged: (args: DescriptionChangedArgs) => void;
-    onRemove: (projectId: number, tagId?: number) => void;
+    onRemove: (projectId: number, tagId?: string) => void;
 }
 
 export const ProjectView = (props: ProjectProps) => {

@@ -9,23 +9,23 @@ interface ProjectSelectorProps {
 }
 export interface ProjectTimeEntry {
     projectId: number;
-    tagId: number;
+    tagId: string;
 }
 interface ProjectSelectorState extends ProjectTimeEntry {
 }
 interface Selected {
-    value: number;
+    value: string;
 }
 export default class ProjectSelector extends React.Component<ProjectSelectorProps, ProjectSelectorState> {
     constructor(props: ProjectSelectorProps) {
         super(props);
-        this.state = { projectId: -1, tagId: 0};
+        this.state = { projectId: -1, tagId: ''};
     }
 
     render() {
         const projects = this.props.projects || [];
         const tags = this.props.tags || [];
-        const requiresSelection = this.state.projectId === -1 || this.state.tagId === 0;
+        const requiresSelection = this.state.projectId === -1 || !this.state.tagId;
         return (
             <>
                 <Dropdown
@@ -34,14 +34,14 @@ export default class ProjectSelector extends React.Component<ProjectSelectorProp
                     search={true}
                     selection={true}
                     options={projects.map(p => { return { key: p.id, value: p.id, text: p.name }; })}
-                    onChange={(e, d: Selected) => this.setState({ projectId: d.value })}
+                    onChange={(e, d: Selected) => this.setState({ projectId: Number(d.value) })}
                 />
                 <Dropdown
                     placeholder="Select activity"
                     fluid={true}
                     search={true}
                     selection={true}
-                    options={tags.map(p => { return { key: p.id, value: p.id, text: p.name }; })}
+                    options={tags.map(tag => { return { key: tag.name, value: tag.name, text: tag.name }; })}
                     onChange={(e, d: Selected) => this.setState({ tagId: d.value })}
                 />
                 <Button

@@ -9,7 +9,7 @@ export const TagView = ({ tag, onTimeChanged, onDescriptionChanged, onRemove }:
         tag: TimesheetEntry;
         onDescriptionChanged: (description: DescriptionChangedArgs) => void;
         onTimeChanged: (period: TimeChangedArgs) => void;
-        onRemove: (tagId: number) => void;
+        onRemove: (tagId: string) => void;
     }) => (
         <>
         <RemoveableHeader
