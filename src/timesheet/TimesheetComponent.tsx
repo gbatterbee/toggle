@@ -212,61 +212,29 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
         this.state.projectEntries.forEach(pe => {
             pe.day.forEach((day, i) => {
                 if (day && day.time && day.time !== '00:00') {
-                        const request = {
-                            'tags': [pe.tagId],
-                            'duration': day.time.split(':')
-                                .reduce((acc, time) => (60 * (Number(acc) + Number(time))), 0),
-                            'start': dates[i] + 'T09:00:00+00:00',
-                            'created_with': 'TogglGB',
-                            'wid': (this.state.projects.find(p => p.id === pe.projectId) as Project).wid
-                        };
-                        if (day.description) {
-                            // tslint:disable-next-line:no-string-literal
-                            request['description'] = day.description;
-                        }
-                        if (pe.projectId) {
-                            // tslint:disable-next-line:no-string-literal
-                            request['pid'] = pe.projectId;
-                        }
-                        toSend.push(request);
+                    const request = {
+                        'tags': [pe.tagId],
+                        'duration': day.time.split(':')
+                            .reduce((acc, time) => (60 * (Number(acc) + Number(time))), 0),
+                        'start': dates[i] + 'T09:00:00+00:00',
+                        'created_with': 'TogglGB',
+                        'wid': (this.state.projects.find(p => p.id === pe.projectId) as Project).wid
+                    };
+                    if (day.description) {
+                        // tslint:disable-next-line:no-string-literal
+                        request['description'] = day.description;
+                    }
+                    if (pe.projectId) {
+                        // tslint:disable-next-line:no-string-literal
+                        request['pid'] = pe.projectId;
+                    }
+                    toSend.push(request);
                 }
             });
         });
-
-        // const request = {
-        //     'data': [
-        //         {"time_entry":{
-        //             "start":"2012-02-16T15:35:47+02:00",
-        //             "duration":0,
-        //             "description":"",
-        //             "created_with":"Postman"
-        //         }}
-
-        //         {
-        //             'wid': 777,
-        //             'pid': 20123718,
-        //             'start': '2013-08-01T10:46:00',
-        //             'duration': 3602,
-        //             'description': 'Development',
-        //             'tags': ['billed', 'poductive', 'overhours'],
-        //             'at': '2013-08-01T12:04:57'
-        //         }, {
-        //             'id': 436694101,
-        //             'guid': 'ce3c2409-e624-64e2-6742-c623ff284091',
-        //             'wid': 777,
-        //             'billable': false,
-        //             'start': '2013-08-01T11:11:00',
-        //             'stop': '2013-08-01T11:46:04',
-        //             'duration': 2104,
-        //             'description': 'Meeting with the client',
-        //             'tags': ['billed', 'poductive', 'holiday'],
-        //             'duronly': false,
-        //             'at': '2013-08-01T11:46:08'
-        //         }
-        //     ]
-        // }
-
-        console.log(toSend);
+        // {"tags":["Holiday"],"duration":13800,"start":"2018-02-12T09:00:00+00:00",
+        // "created_with":"TogglGB","wid":792899}
+        console.log(JSON.stringify(toSend));
         this.setState({ saving: true });
         const promises = toSend.map(r => fetch('https://gbapiman.azure-api.net/toggl/time_entries', {
             method: 'POST',
@@ -274,20 +242,23 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': `Basic ${''}`,
+                'Authorization': `Basic ${this.props.apiKey}`,
             },
-            body: JSON.stringify(r)
+            body: JSON.stringify({ 'time_entry': r })
         }));
 
         Promise.all(promises)
             .then(resp => {
                 if (resp.filter(r => !r.ok).length) {
+                    resp[0].json().then(x => console.log(x));
+                    console.log(resp);
                     alert('There were problems sending the requests.\nSuggest checking Toggl - before trying again');
                 }
                 this.setState({ saving: false });
             })
             .catch(r => {
                 // tslint:disable-next-line:max-line-length
+                console.log(r);
                 alert('There was a network error sending your requests.\nSuggest checking Toggl - before trying again');
                 this.setState({ saving: false });
             });
