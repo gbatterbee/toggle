@@ -163,7 +163,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
     }
 
     getTags = (key: string) => {
-        fetch('https://gbapiman.azure-api.net/toggl/tags', {
+        fetch('https://togglgb.azurewebsites.net/tags', {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -175,11 +175,12 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
     }
 
     getProjects = (key: string) => {
-        fetch('https://gbapiman.azure-api.net/toggl/projects', {
+        fetch('https://togglgb.azurewebsites.net/projects', {
             method: 'GET',
             mode: 'cors',
             headers: {
                 'Accept': 'application/json',
+                
                 'Content-Type': 'application/json',
                 'Authorization': `Basic ${key}`,
             }
@@ -232,11 +233,9 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
                 }
             });
         });
-        // {"tags":["Holiday"],"duration":13800,"start":"2018-02-12T09:00:00+00:00",
-        // "created_with":"TogglGB","wid":792899}
         console.log(JSON.stringify(toSend));
         this.setState({ saving: true });
-        const promises = toSend.map(r => fetch('https://gbapiman.azure-api.net/toggl/time_entries', {
+        const promises = toSend.map(r => fetch('https://togglgb.azurewebsites.net/entries', {
             method: 'POST',
             mode: 'cors',
             headers: {
