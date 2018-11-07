@@ -163,7 +163,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
     }
 
     getTags = (key: string) => {
-        fetch('https://togglgb.azurewebsites.net/tags', {
+        fetch('https://toggle-eun-fn.azurewebsites.net/tags', {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -175,7 +175,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
     }
 
     getProjects = (key: string) => {
-        fetch('https://togglgb.azurewebsites.net/projects', {
+        fetch('https://toggle-eun-fn.azurewebsites.net/projects', {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -218,7 +218,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
                         'duration': day.time.split(':')
                             .reduce((acc, time) => (60 * (Number(acc) + Number(time))), 0),
                         'start': dates[i] + 'T09:00:00+00:00',
-                        'created_with': 'TogglGB',
+                        'created_with': 'Toggle',
                         'wid': (this.state.projects.find(p => p.id === pe.projectId) as Project).wid
                     };
                     if (day.description) {
@@ -235,7 +235,7 @@ export default class TimesheetComponent extends React.Component<TimesheetCompone
         });
         console.log(JSON.stringify(toSend));
         this.setState({ saving: true });
-        const promises = toSend.map(r => fetch('https://togglgb.azurewebsites.net/entries', {
+        const promises = toSend.map(r => fetch('https://toggle-eun-fn.azurewebsites.net/entries', {
             method: 'POST',
             mode: 'cors',
             headers: {

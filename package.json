@@ -2,6 +2,7 @@
   "name": "toggle",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/toggle",
   "dependencies": {
     "@types/enzyme": "^3.1.8",
     "@types/enzyme-adapter-react-16": "^1.0.1",
