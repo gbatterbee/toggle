@@ -10,5 +10,16 @@ jobs:
       run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git
     - name: list remotes      
       run:  git remote -v
+    - name: login
+      run:  >
+             cat >> ~/.netrc <<'EOF'
+             machine api.heroku.com
+             login gbatterbee@yahoo.com
+             password atokenhere
+             machine git.heroku.com
+             login atokenhere
+             password ${api_key}      
+             EOF
+             
     - name: push
       run:  git push heroku HEAD:master
