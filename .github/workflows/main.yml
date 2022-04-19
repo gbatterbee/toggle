@@ -10,7 +10,5 @@ jobs:
       run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git
     - name: list remotes      
       run:  git remote -v
-    - name: status
-      run:  git checkout master
     - name: push
       run:  git push heroku master
