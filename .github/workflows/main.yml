@@ -21,7 +21,5 @@ jobs:
       - run: heroku auth:whoami  
       - name: Add heroku
         run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git      
-      - name: fetch heroku
-        run:  git fetch --prune --unshallow
       - name: push
         run:  git push heroku master
