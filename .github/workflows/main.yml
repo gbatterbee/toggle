@@ -11,6 +11,6 @@ jobs:
     - name: list remotes      
       run:  git remote -v
     - name: status
-      run:  git show-ref
+      run:  git checkout master
     - name: push
-      run:  git status
+      run:  git branch --show-current
