@@ -13,4 +13,4 @@ jobs:
     - name: status
       run:  git show-ref
     - name: push
-      run:  git push heroku origin
+      run:  git status
