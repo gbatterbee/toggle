@@ -1,25 +1,17 @@
-name: Deploy master to Heroku
-on: [push]
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Add heroku
-      run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git
-    - name: list remotes      
-      run:  git remote -v
-    - name: login
-      run:  >
-             cat >> ~/.netrc <<EOF
-             machine api.heroku.com
-             login gbatterbee@yahoo.com
-             password atokenhere
-             machine git.heroku.com
-             login atokenhere
-             password ${api_key}      
-             EOF
-             
-    - name: push
-      run:  git push heroku HEAD:master
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: 123213213123
+          heroku_app_name: "gbatterbee-github-example" #Must be unique in Heroku
+          heroku_email: "gbatterbee@yahoo.com"
