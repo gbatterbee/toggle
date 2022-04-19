@@ -11,4 +11,4 @@ jobs:
     - name: list remotes      
       run:  git remote -v
     - name: push
-      run:  git push heroku master
+      run:  git push heroku
