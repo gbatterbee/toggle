@@ -16,8 +16,10 @@ jobs:
           heroku_app_name: "gbatterbee-github-example" #Must be unique in Heroku
           heroku_email: ${{ secrets.EMAIL }}
           justlogin: true
-      - run: heroku auth:whoami
+      - run: heroku auth:whoami  
       - name: Add heroku
         run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git      
+      - name: fetch heroku
+        run:  git fetch --all --unshallow
       - name: push
         run:  git push heroku master
