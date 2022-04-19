@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:    
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{ secrets.API_KEY }}
@@ -20,6 +22,6 @@ jobs:
       - name: Add heroku
         run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git      
       - name: fetch heroku
-        run:  git fetch --all --unshallow
+        run:  git fetch --prune --unshallow
       - name: push
         run:  git push heroku master
