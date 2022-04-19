@@ -1,0 +1,14 @@
+name: Deploy master to Heroku
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Add heroku
+      run:  git remote add heroku https://git.heroku.com/gbatterbee-github-example.git
+    - name: list remotes      
+      run:  git remote -v
+    - name: status
+      run:  git show-ref
