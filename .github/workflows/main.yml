@@ -13,4 +13,4 @@ jobs:
     - name: status
       run:  git checkout master
     - name: push
-      run:  git branch --show-current
+      run:  git push heroku master
